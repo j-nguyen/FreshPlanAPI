@@ -35,7 +35,7 @@ public final class AuthController {
 		var code: Int
 		#if os(Linux)
 			srandom(UInt32(time(nil)))
-			code = UInt32(random() % 10000)
+			code = Int(random() % 10000)
 		#else
 			code = Int(arc4random_uniform(9999))
 		#endif
