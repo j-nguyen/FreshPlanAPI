@@ -44,6 +44,7 @@ extension Verification: Preparation {
 			verification.id()
 			verification.parent(User.self)
 			verification.string("token")
+			verification.raw("UNIQUE(\"userId\", \"token\")")
 		}
 	}
 	
