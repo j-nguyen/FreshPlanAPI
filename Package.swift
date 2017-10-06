@@ -13,9 +13,10 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-provider.git", .upToNextMajor(from: "1.2.0")),
         .package(url: "https://github.com/vapor/jwt-provider.git", .upToNextMajor(from: "1.2.0")),
         .package(url: "https://github.com/vapor-community/postgresql-provider.git", .upToNextMajor(from: "2.1.0")),
+        .package(url: "https://github.com/vapor/validation.git", .upToNextMajor(from: "1.1.0"))
     ],
     targets: [
-        .target(name: "App", dependencies: ["Vapor", "FluentProvider", "PostgreSQLProvider", "JWTProvider"],
+        .target(name: "App", dependencies: ["Vapor", "FluentProvider", "PostgreSQLProvider", "JWTProvider", "Validation"],
                 exclude: [
                     "Config",
                     "Public",
