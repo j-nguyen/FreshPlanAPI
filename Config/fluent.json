@@ -4,12 +4,12 @@
     "//": "sqlite: Persisted SQLite DB (configure with sqlite.json)",
     "//": "Other drivers are available through Vapor providers",
     "//": "https://github.com/search?q=topic:vapor-provider+topic:database",
-    "driver": "memory",
+    "driver": "postgresql",
     
     "//": "Naming convention to use for creating foreign id keys,",
     "//": "e.g., `user_id`",
     "//": "`camelCase` option is also available.",
-    "keyNamingConvention": "snake_case",
+    "keyNamingConvention": "camelCase",
     
     "//": "Name of the table Fluent uses to track migrations.",
     "//": "If null, preparations will not be run.",
