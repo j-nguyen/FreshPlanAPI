@@ -52,7 +52,7 @@ extension User {
 	/**
 	 * Checks for the registration on the user
 	**/
-	public static func register(user: User) throws -> User {
+	public static func register(user: User) throws {
 		guard user.email != "", user.firstName != "", user.lastName != "", user.password != "" else {
 			throw Abort(.conflict, reason: "Some fields are missing!")
 		}
@@ -85,7 +85,6 @@ extension User {
 		user.password = try BCrypt.Hash.make(message: user.password).makeString()
 	
 		try user.save()
-		return user
 	}
 }
 
