@@ -18,11 +18,52 @@ public final class AuthController {
 		auth.post("register", handler: register)
 		auth.post("login", handler: login)
 		auth.get("verify", handler: verify)
+		auth.get("resend", handler: resend)
+	}
+	
+	public func resend(request: Request) throws -> ResponseRepresentable {
+		guard let email = request.json?["email"]?.string?.lowercased() else {
+			throw Abort.badRequest
+		}
+		
+		guard let user = try User.makeQuery().filter("email", email).first() else {
+			throw Abort.badRequest
+		}
+		
+		guard let userId = user.id else { throw Abort.notFound }
+		
+		// attempt to get the verification token next
+		guard let userVerify = try Verification.makeQuery().filter("userId", userId).first() else {
+			throw Abort.notFound
+		}
+		
+		// if we know the record is there, we can regen it for them.
+		//: This helps us create a "verification" registeration to verify your email
+		var payload = JSON(ExpirationTimeClaim(createTimestamp: { Int(Date().timeIntervalSince1970) + 86400 }))
+		
+		// set-up our random payload string to check
+		var code: Int
+		#if os(Linux)
+			srandom(UInt32(time(nil)))
+			code = Int(random() % 10000) + 1000
+		#else
+			code = Int(arc4random_uniform(9999)) + 1000
+		#endif
+		
+		try payload.set("userId", userId)
+		
+		// creat the token string
+		let token = try JWT(payload: payload, signer: HS512(key: "verify".bytes))
+		let tokenString = try token.createToken()
+		
+		userVerify.token = tokenString
+		try userVerify.save()
+		
+		return JSON([:])
 	}
 	
 	public func verify(request: Request) throws -> ResponseRepresentable {
-		guard
-			let email = request.json?["email"]?.string?.lowercased() else {
+		guard let email = request.json?["email"]?.string?.lowercased() else {
 				throw Abort.badRequest
 		}
 		
