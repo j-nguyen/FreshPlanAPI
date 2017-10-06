@@ -15,6 +15,7 @@ public final class V1Collection: EmptyInitializable, RouteCollection {
 		// gets the versioning for future release
 		let api = builder.grouped("api", "v1")
 		
-		
+		// add from the controllers
+		AuthController().addRoutes(api)
 	}
 }

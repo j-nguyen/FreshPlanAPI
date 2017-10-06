@@ -5,4 +5,13 @@
 //  Created by Johnny Nguyen on 2017-10-05.
 //
 
-import Foundation
+import Vapor
+import HTTP
+
+public final class AuthController {
+	public func addRoutes(_ builder: RouteBuilder) {
+		
+	}
+	
+	
+}
