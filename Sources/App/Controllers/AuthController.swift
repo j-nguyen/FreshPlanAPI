@@ -118,6 +118,9 @@ public final class AuthController {
 		user.verified = true
 		try user.save()
 		
+		// once it's verified, we can also delete our record as well
+		try userVerify.delete()
+		
 		return JSON([:])
 	}
 	
