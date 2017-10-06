@@ -56,15 +56,15 @@ extension HTMLTemplate {
 		
 		// get the host
 		guard let app = droplet?.config["app"]?.object else { throw Abort.notFound }
-		guard let name = app["host"]?.string else { throw Abort.notFound }
+		guard let host = app["host"]?.string else { throw Abort.notFound }
 		
 		switch template {
 		case let .verification(user, jwt):
-			return String.format(file, user.firstName, user.lastName, name, jwt)
+			return String.format(file, user.firstName, user.lastName, host, jwt)
 		case let .forgot(user, jwt):
-			return String.format(file, user.firstName, user.lastName, name, jwt)
+			return String.format(file, user.firstName, user.lastName, host, jwt)
 		case let .reset(user):
-			return String.format(file, user.firstName, user.lastName, name)
+			return String.format(file, user.firstName, user.lastName, host)
 		}
 	}
 }

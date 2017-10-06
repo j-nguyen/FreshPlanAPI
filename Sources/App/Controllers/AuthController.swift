@@ -33,6 +33,6 @@ public final class AuthController {
 		let token = try JWT(payload: payload, signer: HS512(key: "verify".bytes))
 		let tokenString = try token.createToken()
 		
-		
+		return JSON([:])
 	}
 }
