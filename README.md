@@ -1,5 +1,5 @@
 # FreshPlan API
-[![Build Status](https://travis-ci.com/j-nguyen/FreshPlanAPI.svg?token=bXWz1QBA9UNTPjTyxj4B&branch=master)](https://travis-ci.com/j-nguyen/FreshPlanAPI)
+[![Build Status](https://travis-ci.com/j-nguyen/FreshPlanAPI.svg?token=bXWz1QBA9UNTPjTyxj4B&branch=staging)](https://travis-ci.com/j-nguyen/FreshPlanAPI)
 API created in Vapor, and to be used for school project.
 
 ## Requirements
