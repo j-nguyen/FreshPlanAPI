@@ -95,7 +95,8 @@ extension User: Preparation {
 			user.id()
 			user.string("firstName")
 			user.string("lastName")
-			user.string("email")
+			user.string("email", unique: true)
+			user.string("password")
 			user.bool("verified", default: false)
 		}
 	}
