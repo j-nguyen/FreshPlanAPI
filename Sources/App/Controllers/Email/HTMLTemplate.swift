@@ -16,9 +16,7 @@ import Foundation
 import Vapor
 
 enum HTMLTemplate {
-	case verification(user: User, jwt: String)
-	case forgot(user: User, jwt: String)
-	case reset(user: User)
+	case verification(user: User, code: Int)
 }
 
 extension HTMLTemplate {
@@ -27,21 +25,13 @@ extension HTMLTemplate {
 		switch self {
 		case .verification:
 			return "\(currentDirectory)/verification.html"
-		case .forgot:
-			return "\(currentDirectory)/forgot.html"
-		case .reset:
-			return "\(currentDirectory)/reset.html"
 		}
 	}
 	
 	var subject: String {
 		switch self {
 		case .verification:
-			return "Verifying your Email Address"
-		case .forgot:
-			return "Forgot Your Password"
-		case .reset:
-			return "Resetting Your Password Confirmation"
+			return "Verifying your User Account"
 		}
 	}
 	
@@ -54,17 +44,9 @@ extension HTMLTemplate {
 		// read the template
 		let file = try template.type()
 		
-		// get the host
-		guard let app = droplet?.config["app"]?.object else { throw Abort.notFound }
-		guard let name = app["host"]?.string else { throw Abort.notFound }
-		
 		switch template {
-		case let .verification(user, jwt):
-			return String.format(file, user.firstName, user.lastName, name, jwt)
-		case let .forgot(user, jwt):
-			return String.format(file, user.firstName, user.lastName, name, jwt)
-		case let .reset(user):
-			return String.format(file, user.firstName, user.lastName, name)
+		case let .verification(user, code):
+			return String.format(file, user.firstName, user.lastName, code)
 		}
 	}
 }
