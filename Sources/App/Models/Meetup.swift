@@ -81,6 +81,7 @@ extension Meetup: JSONConvertible {
 	
 	public func makeJSON() throws -> JSON {
 		var json = JSON()
+		try json.set("id", id)
 		try json.set("meetupType", meetupType.get()?.makeJSON())
 		try json.set("title", title)
 		try json.set("startDate", startDate)

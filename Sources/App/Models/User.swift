@@ -117,10 +117,13 @@ extension User: JSONConvertible {
 	
 	public func makeJSON() throws -> JSON {
 		var json = JSON()
+		try json.set("id", id)
 		try json.set("firstName", firstName)
 		try json.set("lastName", lastName)
 		try json.set("email", email)
 		try json.set("verified", verified)
+		try json.set("createdAt", createdAt)
+		try json.set("updatedAt", updatedAt)
 		return json
 	}
 }

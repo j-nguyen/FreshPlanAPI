@@ -44,6 +44,7 @@ extension MeetupType: Preparation {
 extension MeetupType: JSONRepresentable {
 	public func makeJSON() throws -> JSON {
 		var json = JSON()
+		try json.set("id", id)
 		try json.set("type", type)
 		return json
 	}

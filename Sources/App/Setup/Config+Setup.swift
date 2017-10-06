@@ -23,5 +23,7 @@ extension Config {
 		preparations.append(User.self)
 		preparations.append(Verification.self)
 		preparations.append(MeetupType.self)
+		preparations.append(Meetup.self)
+		preparations.append(Invitation.self)
 	}
 }
