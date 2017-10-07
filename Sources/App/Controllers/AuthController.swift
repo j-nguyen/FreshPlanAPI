@@ -17,8 +17,8 @@ public final class AuthController {
 		// add routes
 		auth.post("register", handler: register)
 		auth.post("login", handler: login)
-		auth.get("verify", handler: verify)
-		auth.get("resend", handler: resend)
+		auth.post("verify", handler: verify)
+		auth.post("resend", handler: resend)
 	}
 	
 	public func resend(request: Request) throws -> ResponseRepresentable {
@@ -51,6 +51,7 @@ public final class AuthController {
 		#endif
 		
 		try payload.set("userId", userId)
+		try payload.set("code", code)
 		
 		// creat the token string
 		let token = try JWT(payload: payload, signer: HS512(key: "verify".bytes))
@@ -59,11 +60,19 @@ public final class AuthController {
 		userVerify.token = tokenString
 		try userVerify.save()
 		
+		// send email
+		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+		
+		let emailController = try EmailController(config: config)
+		try emailController.sendVerificationEmail(to: user, code: code)
+		
 		return JSON([:])
 	}
 	
 	public func verify(request: Request) throws -> ResponseRepresentable {
-		guard let email = request.json?["email"]?.string?.lowercased() else {
+		guard
+			let email = request.json?["email"]?.string?.lowercased(),
+			let code = request.json?["code"]?.int else {
 				throw Abort.badRequest
 		}
 		
@@ -103,6 +112,7 @@ public final class AuthController {
 			#endif
 			
 			try payload.set("userId", userId)
+			try payload.set("code", code)
 			
 			// creat the token string
 			let token = try JWT(payload: payload, signer: HS512(key: "verify".bytes))
@@ -112,7 +122,17 @@ public final class AuthController {
 			let verification = Verification(userId: userId, token: tokenString)
 			try verification.save()
 			
+			// send email
+			guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+			
+			let emailController = try EmailController(config: config)
+			try emailController.sendVerificationEmail(to: user, code: code)
+			
 			return JSON([:])
+		}
+		
+		guard code == jwt.payload["code"]?.int else {
+			throw Abort(.forbidden, reason: "These codes don't match!")
 		}
 		
 		user.verified = true
@@ -182,6 +202,7 @@ public final class AuthController {
 		#endif
 		
 		try payload.set("userId", userId)
+		try payload.set("code", code)
 		
 		// creat the token string
 		let token = try JWT(payload: payload, signer: HS512(key: "verify".bytes))
