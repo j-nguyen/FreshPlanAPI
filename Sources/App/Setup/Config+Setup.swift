@@ -13,7 +13,7 @@ extension Config {
 	}
 	
 	private func setupConfigurable() {
-		addConfigurable(command: SeedCommand.init, name: "my-command")
+		addConfigurable(command: SeedCommand.init, name: "seed")
 	}
 	
 	/// Configure providers
