@@ -9,6 +9,11 @@ extension Config {
 
 		try setupProviders()
 		try setupPreparations()
+		setupConfigurable()
+	}
+	
+	private func setupConfigurable() {
+		addConfigurable(command: SeedCommand.init, name: "seed")
 	}
 	
 	/// Configure providers
