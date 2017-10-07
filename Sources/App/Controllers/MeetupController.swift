@@ -20,6 +20,9 @@ public final class MeetupController {
 			throw Abort.badRequest
 		}
 		
+		// once we get userId, we'll find all the ties between meetup
+		guard let meetups = try Meetup.makeQuery()
+		
 		return JSON([:])
 	}
 }

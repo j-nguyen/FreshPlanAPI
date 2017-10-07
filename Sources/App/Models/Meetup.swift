@@ -10,6 +10,7 @@ import FluentProvider
 
 public final class Meetup: Model, Timestampable {
 	public var meetupTypeId: Identifier
+	public var userId: Identifier
 	public var title: String
 	public var startDate: Date
 	public var endDate: Date
@@ -17,8 +18,9 @@ public final class Meetup: Model, Timestampable {
 	
 	public let storage = Storage()
 	
-	public init(meetupTypeId: Identifier, title: String, startDate: Date, endDate: Date, metadata: String) {
+	public init(meetupTypeId: Identifier, userId: Identifier, title: String, startDate: Date, endDate: Date, metadata: String) {
 		self.meetupTypeId = meetupTypeId
+		self.userId = userId
 		self.title = title
 		self.startDate = startDate
 		self.endDate = endDate
@@ -27,6 +29,7 @@ public final class Meetup: Model, Timestampable {
 	
 	public init(row: Row) throws {
 		meetupTypeId = try row.get("meetupTypeId")
+		userId = try row.get("userId")
 		title = try row.get("title")
 		startDate = try row.get("startDate")
 		endDate = try row.get("endDate")
@@ -36,6 +39,7 @@ public final class Meetup: Model, Timestampable {
 	public func makeRow() throws -> Row {
 		var row = Row()
 		try row.set("meetupTypeId", meetupTypeId)
+		try row.set("userId", userId)
 		try row.set("title", title)
 		try row.set("startDate", startDate)
 		try row.set("endDate", endDate)
@@ -48,6 +52,10 @@ extension Meetup {
 	public var meetupType: Parent<Meetup, MeetupType> {
 		return parent(id: meetupTypeId)
 	}
+	
+	public var user: Parent<Meetup, User> {
+		return parent(id: userId)
+	}
 }
 
 extension Meetup: Preparation {
@@ -55,6 +63,7 @@ extension Meetup: Preparation {
 		try database.create(self) { meetup in
 			meetup.id()
 			meetup.parent(MeetupType.self)
+			meetup.parent(User.self)
 			meetup.string("title")
 			meetup.date("startDate")
 			meetup.date("endDate")
@@ -72,6 +81,7 @@ extension Meetup: JSONConvertible {
 	public convenience init(json: JSON) throws {
 	 self.init(
 			meetupTypeId: try json.get("meetupTypeId"),
+			userId: try json.get("userId"),
 		  title: try json.get("title"),
 		  startDate: try json.get("startDate"),
 		  endDate: try json.get("endDate"),
@@ -83,6 +93,7 @@ extension Meetup: JSONConvertible {
 		var json = JSON()
 		try json.set("id", id)
 		try json.set("meetupType", meetupType.get()?.makeJSON())
+		try json.set("user", user.get()?.makeJSON())
 		try json.set("title", title)
 		try json.set("startDate", startDate)
 		try json.set("endDate", endDate)
