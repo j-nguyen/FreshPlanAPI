@@ -9,7 +9,7 @@ import Vapor
 import Console
 
 public final class SeedCommand: Command {
-	public let id = "seed-command"
+	public let id = "seed"
 	public let help = ["This command initializes the database with pre-added data."]
 	public let console: ConsoleProtocol
 	
