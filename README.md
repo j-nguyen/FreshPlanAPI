@@ -7,32 +7,6 @@ API created in Vapor, and to be used for school project.
 
 ## Set-up Project
 
-1. Put this in `Config/secrets` folder, and call this `postgresql.json`. Set it to your configuration
-
-```json
-{
-    "hostname": "127.0.0.1",
-    "user": "postgres",
-    "password": "hello",
-    "database": "test",
-    "port": 5432
-}
-```
-
-1. Add this file called `crypto.json` as well.
-
-```json
-{
-    "hash": {
-        "method": "sha256",
-        "encoding": "hex",
-        "key": "0000000000000000"
-    },
-    
-    "cipher": {
-        "method": "aes256",
-        "encoding": "base64",
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-    }
-}
-```
+1. Retrieve the `secrets` folder.
+1. Next, run `vapor build && vapor run prepare && vapor run seed`. This gets all the pre-info seed database you need.
+1. Have fun!
