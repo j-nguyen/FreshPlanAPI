@@ -122,6 +122,12 @@ public final class AuthController {
 			let verification = Verification(userId: userId, token: tokenString)
 			try verification.save()
 			
+			// send email
+			guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+			
+			let emailController = try EmailController(config: config)
+			try emailController.sendVerificationEmail(to: user, code: code)
+			
 			return JSON([:])
 		}
 		
