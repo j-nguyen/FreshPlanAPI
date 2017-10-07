@@ -49,12 +49,28 @@ public final class Meetup: Model, Timestampable {
 }
 
 extension Meetup {
+	public enum MeetType: String {
+		case location
+		case other
+	}
+	
 	public var meetupType: Parent<Meetup, MeetupType> {
 		return parent(id: meetupTypeId)
 	}
 	
 	public var user: Parent<Meetup, User> {
 		return parent(id: userId)
+	}
+}
+
+extension Meetup.MeetType {
+	public func id() throws -> Identifier {
+		guard
+			let type = try MeetupType.makeQuery().filter("type", self.rawValue).first(),
+			let id = type.id else {
+			throw Abort.notFound
+		}
+		return id
 	}
 }
 
