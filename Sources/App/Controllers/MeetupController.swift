@@ -11,8 +11,15 @@ import HTTP
 public final class MeetupController {
 	public func addRoutes(_ builder: RouteBuilder) {
 		// add the token middleware here as a default to make sure all routes are secured now
-		let meetup = builder.grouped(TokenMiddleware()).grouped("meetup")
+		builder.grouped(TokenMiddleware()).get("meetup", handler: getAllMeetups)
+	}
+	
+	// Gets all the meetups, based on you, the user
+	public func getAllMeetups(request: Request) throws -> ResponseRepresentable {
+		guard let userId = request.headers["userId"]?.int else {
+			throw Abort.badRequest
+		}
 		
-		
+		return JSON([:])
 	}
 }
