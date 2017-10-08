@@ -17,6 +17,7 @@ import Vapor
 
 enum HTMLTemplate {
 	case verification(user: User, code: Int)
+	case confirmation(user: User)
 }
 
 extension HTMLTemplate {
@@ -25,6 +26,8 @@ extension HTMLTemplate {
 		switch self {
 		case .verification:
 			return "\(currentDirectory)/verification.html"
+		case .confirmation:
+			return "\(currentDirectory)/confirmation.html"
 		}
 	}
 	
@@ -32,6 +35,8 @@ extension HTMLTemplate {
 		switch self {
 		case .verification:
 			return "Verifying your User Account"
+		case .confirmation:
+			return "Account Verified!"
 		}
 	}
 	
@@ -47,6 +52,8 @@ extension HTMLTemplate {
 		switch template {
 		case let .verification(user, code):
 			return String.format(file, user.firstName, user.lastName, code)
+		case let .confirmation(user):
+			return String.format(file, user.firstName, user.lastName)
 		}
 	}
 }
