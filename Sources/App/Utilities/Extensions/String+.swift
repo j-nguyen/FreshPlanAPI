@@ -19,9 +19,12 @@ extension String {
 		return result
 	}
 	
-	func generatePlaceholder() -> String {
+	func generatePlaceholder() throws -> String {
 		// TODO : Fix this stupid guard statement soon
-		let firstLetter = self.characters.first!
+        guard let firstLetter = self.characters.first else {
+            throw Abort.notFound
+            
+        }
 		return "https://via.placeholder.com/300?text=\(firstLetter)"
 	}
 }
