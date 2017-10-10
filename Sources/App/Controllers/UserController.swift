@@ -78,6 +78,13 @@ public final class UserController {
 	
 	// get all the users
 	public func getAllUsers(request: Request) throws -> ResponseRepresentable {
+		
+		// if a search query shows up, we can filter based on the contains
+		if let search = request.query?["search"]?.string {
+			let users = try User.makeQuery().filter("displayName", .contains, search).all()
+			return try users.makeJSON()
+		}
+		
 		let users = try User.all()
 		return try users.makeJSON()
 	}
