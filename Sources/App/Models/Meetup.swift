@@ -9,6 +9,7 @@ import Vapor
 import FluentProvider
 
 public final class Meetup: Model, Timestampable {
+    
 	public var meetupTypeId: Identifier
 	public var userId: Identifier
 	public var title: String
