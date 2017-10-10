@@ -48,7 +48,6 @@ public final class UserController {
         user.lastName = request.json?["lastName"]?.string ?? user.lastName
         user.displayName = request.json?["displayName"]?.string ?? user.displayName
         user.email = request.json?["email"]?.string ?? user.email
-        user.password = request.json?["password"]?.string ?? user.password
         
         return JSON([:])
     }
