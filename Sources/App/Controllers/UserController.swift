@@ -20,18 +20,36 @@ public final class UserController {
 		builder.grouped(TokenMiddleware()).post("user", ":userId", "friends", handler: addFriend)
 		builder.grouped(TokenMiddleware()).get("user", ":userId", "friends", ":friendId", handler: getFriend)
 		builder.grouped(TokenMiddleware()).delete("user", ":userId", "friends", ":friendId", handler: removeFriend)
+		builder.grouped(TokenMiddleware()).patch("user", ":userId", "friends", ":friendId", handler: updateFriend)
+	}
+	
+	public func updateFriend(request: Request) throws -> ResponseRepresentable {
+		let friend = try request.friend()
+		
+		guard friend.userId.int == request.headers["userId"]?.int else {
+			throw Abort(.forbidden, reason: "You cannot edit someones friend request!")
+		}
+		
+		friend.accepted = request.json?["accepted"]?.bool ?? friend.accepted
+		
+		if friend.accepted {
+			guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+			let emailController = try EmailController(config: config)
+			
+			guard let user = try friend.user.get(), let friendOfUser = try friend.friend.get() else {
+				throw Abort.notFound
+			}
+			
+			try emailController.sendAcceptedFriendRequestEmail(from: user, to: friendOfUser)
+		}
+		
+		try friend.save()
+		
+		return JSON([:])
 	}
 	
 	public func removeFriend(request: Request) throws -> ResponseRepresentable {
-		guard let userId = request.parameters["userId"]?.int,
-			let friendId = request.parameters["friendId"]?.int else {
-				throw Abort.badRequest
-		}
-		
-		guard let friend = try Friend.makeQuery().filter("userId", userId).and({ try $0.filter("friendId", friendId) }).first() else {
-			throw Abort.notFound
-		}
-		
+		let friend = try request.friend()
 		try friend.delete()
 		
 		return JSON([:])
@@ -49,20 +67,18 @@ public final class UserController {
 		let friend = Friend(userId: Identifier(userId), friendsId: Identifier(friendId))
 		try friend.save()
 		
+		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+		let emailController = try EmailController(config: config)
+		
+		guard let user = try friend.user.get(), let friendOfUser = try friend.friend.get() else { throw Abort.notFound }
+		
+		try emailController.sendFriendRequestEmail(from: user, to: friendOfUser)
+		
 		return JSON([:])
 	}
 	
 	public func getFriend(request: Request) throws -> ResponseRepresentable {
-		guard let userId = request.parameters["userId"]?.int,
-			let friendsId = request.parameters["friendId"]?.int else {
-				throw Abort.badRequest
-		}
-		
-		guard let friend = try Friend.makeQuery().filter("userId", userId)
-			.and({ try $0.filter("friendId", friendsId) }).first() else {
-				throw Abort.notFound
-		}
-		
+		let friend = try request.friend()
 		return try friend.makeJSON()
 	}
 	
@@ -117,6 +133,19 @@ public final class UserController {
 }
 
 extension Request {
+	fileprivate func friend() throws -> Friend {
+		guard let userId = parameters["userId"]?.int,
+			let friendId = parameters["friendId"]?.int else {
+				throw Abort.badRequest
+		}
+		
+		guard let friend = try Friend.makeQuery().filter("userId", userId).and({ try $0.filter("friendId", friendId) }).first() else {
+			throw Abort.notFound
+		}
+		
+		return friend
+	}
+	
 	fileprivate func user() throws -> User {
 		guard let userId = parameters["userId"]?.int else {
 			throw Abort.badRequest
