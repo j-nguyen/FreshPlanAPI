@@ -11,24 +11,15 @@ import HTTP
 
 public final class UserController {
     public func addRoutes(_ builder: RouteBuilder) {
-        builder.grouped(TokenMiddleware()).post("invitation", handler: createInvitation)
         builder.grouped(TokenMiddleware()).get("user", handler: getAllUsers)
         builder.grouped(TokenMiddleware()).get("user", ":userId", handler: getUser)
-        builder.grouped(TokenMiddleware()).get("user", ":userId", handler: updateUser)
+        builder.grouped(TokenMiddleware()).patch("user", ":userId", handler: updateUser)
         
-    }
-    
-    //create user invitation
-    public func createInvitation(request: Request) throws -> ResponseRepresentable {
-        guard let userId = request.json?["userId"]?.string,
-            let meetupId = request.json?["meetup"]?.string else {
-                throw Abort.badRequest
-        }
-        
-        let invitation = Invitation (userId: Identifier(userId), meetupId: Identifier(meetupId))
-        try invitation.save()
-        
-        return JSON([:])
+        builder.grouped(TokenMiddleware()).post("invitation", ":invitationId", handler: createInvitation)
+        builder.grouped(TokenMiddleware()).get("invitation", ":invitationId", handler: getAllInvitation)
+        builder.grouped(TokenMiddleware()).get("invitation", ":invitationId", handler: getInvitation)
+        builder.grouped(TokenMiddleware()).patch("invitation", ":invitationId", handler: updateInvitation)
+        builder.grouped(TokenMiddleware()).delete("invitation", ":invitationId", handler: deleteInvitation)
     }
     
     // get all the users
@@ -65,4 +56,63 @@ public final class UserController {
         
         return JSON([:])
     }
+    
+    //create user invitation
+    public func createInvitation(request: Request) throws -> ResponseRepresentable {
+        guard let userId = request.json?["userId"]?.string,
+            let meetupId = request.json?["meetup"]?.string else {
+                throw Abort.badRequest
+        }
+        
+        //model
+        let invitation = Invitation (userId: Identifier(userId), meetupId: Identifier(meetupId))
+        try invitation.save()
+        
+        return JSON([:])
+    }
+    
+    // get all inv
+    public func getAllInvitation(request: Request) throws -> ResponseRepresentable {
+        let invitation = try Invitation.all()
+        return try invitation.makeJSON()
+        
+    }
+    
+    // get inv by id
+    public func getInvitation(request: Request) throws -> ResponseRepresentable {
+        guard let invitationId = request.parameters["invitationId"]?.int else {
+            throw Abort.badRequest
+        }
+        guard let invitation = try Invitation.makeQuery().filter("invitationId", invitationId).first() else {
+            throw Abort.notFound
+        }
+        
+        return try invitation.makeJSON()
+    }
+    
+    // update
+    public func updateInvitation(request: Request) throws -> ResponseRepresentable {
+        guard let invitationId = request.parameters["invitationId"]?.int else {
+            throw Abort.badRequest
+        }
+        guard let invitation = try Invitation.makeQuery().filter("invitationId", invitationId).first() else {
+            throw Abort.notFound
+        }
+        
+        invitation.accepted = request.json?["accepted"]?.bool ?? invitation.accepted
+        return JSON([:])
+    }
+    
+    // delete
+    public func deleteInvitation(request: Request) throws -> ResponseRepresentable {
+        guard let invitationId = request.parameters["invitationId"]?.int else {
+            throw Abort.badRequest
+        }
+        guard let invitation = try Invitation.makeQuery().filter("invitationId", invitationId).first() else {
+            throw Abort.notFound
+        }
+        try invitation.delete()
+        return JSON([:])
+    }
+    
 }
