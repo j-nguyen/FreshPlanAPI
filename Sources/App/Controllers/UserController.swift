@@ -17,11 +17,13 @@ public final class UserController {
         
     }
     
+    // get all the users
     public func getAllUsers(request: Request) throws -> ResponseRepresentable{
         let users = try User.all()
         return try users.makeJSON()
     }
     
+    // get user by the id
     public func getUser(request: Request) throws -> ResponseRepresentable {
         guard let userId = request.parameters["userId"]?.int else {
             throw Abort.badRequest
@@ -33,6 +35,7 @@ public final class UserController {
         return try user.makeJSON()
     }
     
+    // update user
     public func updateUser(request: Request) throws -> ResponseRepresentable {
         guard let userId = request.parameters["userId"]?.int else {
             throw Abort.badRequest
@@ -43,14 +46,10 @@ public final class UserController {
         
         user.firstName = request.json?["firstName"]?.string ?? user.firstName
         user.lastName = request.json?["lastName"]?.string ?? user.lastName
-        
-    
+        user.displayName = request.json?["displayName"]?.string ?? user.displayName
+        user.email = request.json?["email"]?.string ?? user.email
+        user.password = request.json?["password"]?.string ?? user.password
         
         return JSON([:])
     }
-    
-    
-    
-    
-
 }
