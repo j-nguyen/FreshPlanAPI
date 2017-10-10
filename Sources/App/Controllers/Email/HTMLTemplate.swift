@@ -18,6 +18,7 @@ import Vapor
 enum HTMLTemplate {
 	case verification(user: User, code: Int)
 	case confirmation(user: User)
+	case invite(from: User, to: User, meetup: String)
 }
 
 extension HTMLTemplate {
@@ -28,6 +29,8 @@ extension HTMLTemplate {
 			return "\(currentDirectory)/verification.html"
 		case .confirmation:
 			return "\(currentDirectory)/confirmation.html"
+		case .invite:
+			return "\(currentDirectory)/invite.html"
 		}
 	}
 	
@@ -37,6 +40,8 @@ extension HTMLTemplate {
 			return "Verifying your User Account"
 		case .confirmation:
 			return "Account Verified!"
+		case .invite:
+			return "Meetup Invitation"
 		}
 	}
 	
@@ -54,6 +59,8 @@ extension HTMLTemplate {
 			return String.format(file, user.firstName, user.lastName, code)
 		case let .confirmation(user):
 			return String.format(file, user.firstName, user.lastName)
+		case let .invite(from, to, meetup):
+			return String.format(file, from.displayName, to.displayName, meetup)
 		}
 	}
 }
