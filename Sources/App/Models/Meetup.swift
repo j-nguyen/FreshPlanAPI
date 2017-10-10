@@ -62,6 +62,10 @@ extension Meetup {
 	public var user: Parent<Meetup, User> {
 		return parent(id: userId)
 	}
+    
+    public var invitations: Children<Meetup, Invitation> {
+        return children()
+    }
 }
 
 extension Meetup.MeetType {
@@ -114,6 +118,7 @@ extension Meetup: JSONConvertible {
 		try json.set("title", title)
 		try json.set("startDate", startDate)
 		try json.set("endDate", endDate)
+        try json.set("invitations", invitations.all().makeJSON())
 		try json.set("metadata", metadata)
 		return json
 	}
