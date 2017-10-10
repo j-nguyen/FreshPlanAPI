@@ -59,7 +59,7 @@ public final class UserController {
     
     //create user invitation
     public func createInvitation(request: Request) throws -> ResponseRepresentable {
-        guard let userId = request.json?["userId"]?.string,
+        guard let userId = request.headers["userId"]?.int,
             let meetupId = request.json?["meetup"]?.string else {
                 throw Abort.badRequest
         }
@@ -73,17 +73,24 @@ public final class UserController {
     
     // get all inv
     public func getAllInvitation(request: Request) throws -> ResponseRepresentable {
-        let invitation = try Invitation.all()
+        guard let userId = request.headers["userId"]?.int else {
+            throw Abort.badRequest
+            
+        }
+        let invitation = try Invitation.makeQuery().filter("userId", userId).all()
         return try invitation.makeJSON()
-        
     }
     
     // get inv by id
     public func getInvitation(request: Request) throws -> ResponseRepresentable {
+        guard let userId = request.headers["userId"]?.int else {
+            throw Abort.badRequest
+            
+        }
         guard let invitationId = request.parameters["invitationId"]?.int else {
             throw Abort.badRequest
         }
-        guard let invitation = try Invitation.makeQuery().filter("invitationId", invitationId).first() else {
+        guard let invitation = try Invitation.makeQuery().filter("id", invitationId).and({try $0.filter("userId", userId)}).first() else {
             throw Abort.notFound
         }
         
@@ -105,10 +112,14 @@ public final class UserController {
     
     // delete
     public func deleteInvitation(request: Request) throws -> ResponseRepresentable {
+        guard let userId = request.headers["userId"]?.int else {
+            throw Abort.badRequest
+            
+        }
         guard let invitationId = request.parameters["invitationId"]?.int else {
             throw Abort.badRequest
         }
-        guard let invitation = try Invitation.makeQuery().filter("invitationId", invitationId).first() else {
+        guard let invitation = try Invitation.makeQuery().filter("id", invitationId).and({try $0.filter("userId", userId)}).first() else {
             throw Abort.notFound
         }
         try invitation.delete()
