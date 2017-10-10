@@ -30,5 +30,6 @@ extension Config {
 		preparations.append(MeetupType.self)
 		preparations.append(Meetup.self)
 		preparations.append(Invitation.self)
+		preparations.append(Friends.self)
 	}
 }

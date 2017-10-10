@@ -141,6 +141,11 @@ public final class AuthController {
 		// once it's verified, we can also delete our record as well
 		try userVerify.delete()
 		
+		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+		
+		let emailController = try EmailController(config: config)
+		try emailController.sendConfirmationEmail(to: user)
+		
 		return JSON([:])
 	}
 	
