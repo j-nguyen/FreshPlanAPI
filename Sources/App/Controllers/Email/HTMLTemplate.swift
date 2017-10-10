@@ -19,6 +19,8 @@ enum HTMLTemplate {
 	case verification(user: User, code: Int)
 	case confirmation(user: User)
 	case invite(from: User, to: User, meetup: String)
+	case friendRequest(from: User, to: User)
+	case acceptFriend(from: User, to: User)
 }
 
 extension HTMLTemplate {
@@ -31,6 +33,10 @@ extension HTMLTemplate {
 			return "\(currentDirectory)/confirmation.html"
 		case .invite:
 			return "\(currentDirectory)/invite.html"
+		case .friendRequest:
+			return "\(currentDirectory)/friendRequest.html"
+		case .acceptFriend:
+			return "\(currentDirectory)/acceptFriend.html"
 		}
 	}
 	
@@ -42,6 +48,10 @@ extension HTMLTemplate {
 			return "Account Verified!"
 		case .invite:
 			return "Meetup Invitation"
+		case .friendRequest:
+			return "FreshPlan - Friend Request"
+		case .acceptFriend:
+			return "Accepted Friend Request"
 		}
 	}
 	
@@ -61,6 +71,10 @@ extension HTMLTemplate {
 			return String.format(file, user.firstName, user.lastName)
 		case let .invite(from, to, meetup):
 			return String.format(file, from.displayName, to.displayName, meetup)
+		case let .friendRequest(from, to):
+			return String.format(file, from.displayName, to.displayName)
+		case let .acceptFriend(from, to):
+			return String.format(file, from.displayName, to.displayName)
 		}
 	}
 }
