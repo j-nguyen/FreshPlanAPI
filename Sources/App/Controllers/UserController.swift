@@ -11,14 +11,28 @@ import HTTP
 
 public final class UserController {
     public func addRoutes(_ builder: RouteBuilder) {
+        builder.grouped(TokenMiddleware()).post("invitation", handler: createInvitation)
         builder.grouped(TokenMiddleware()).get("user", handler: getAllUsers)
         builder.grouped(TokenMiddleware()).get("user", ":userId", handler: getUser)
         builder.grouped(TokenMiddleware()).get("user", ":userId", handler: updateUser)
         
     }
     
+    //create user invitation
+    public func createInvitation(request: Request) throws -> ResponseRepresentable {
+        guard let userId = request.json?["userId"]?.string,
+            let meetupId = request.json?["meetup"]?.string else {
+                throw Abort.badRequest
+        }
+        
+        let invitation = Invitation (userId: Identifier(userId), meetupId: Identifier(meetupId))
+        try invitation.save()
+        
+        return JSON([:])
+    }
+    
     // get all the users
-    public func getAllUsers(request: Request) throws -> ResponseRepresentable{
+    public func getAllUsers(request: Request) throws -> ResponseRepresentable {
         let users = try User.all()
         return try users.makeJSON()
     }
