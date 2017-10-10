@@ -8,7 +8,7 @@
 import Vapor
 import FluentProvider
 
-public final class Friends: Model, Timestampable {
+public final class Friend: Model, Timestampable {
 	public var userId: Identifier
 	public var friendsId: Identifier
 	public var accepted: Bool = false
@@ -36,7 +36,7 @@ public final class Friends: Model, Timestampable {
 	}
 }
 
-extension Friends {
+extension Friend {
 	public var user: Parent<Friends, User> {
 		return parent(id: userId)
 	}
@@ -46,13 +46,13 @@ extension Friends {
 	}
 }
 
-extension Friends: Preparation {
+extension Friend: Preparation {
 	public static func prepare(_ database: Database) throws {
-		try database.create(self) { friends in
-			friends.id()
-			friends.parent(User.self)
-			friends.parent(User.self, foreignIdKey: "friendsId")
-			friends.bool("accepted", default: false)
+		try database.create(self) { friend in
+			friend.id()
+			friend.parent(User.self)
+			friend.parent(User.self, foreignIdKey: "friendId")
+			friend.bool("accepted", default: false)
 		}
 	}
 	
@@ -61,7 +61,7 @@ extension Friends: Preparation {
 	}
 }
 
-extension Friends: JSONConvertible {
+extension Friend: JSONConvertible {
 	public convenience init(json: JSON) throws {
 		self.init(userId: try json.get("userId"), friendsId: try json.get("friendsId"))
 	}
