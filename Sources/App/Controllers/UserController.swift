@@ -26,7 +26,22 @@ public final class UserController {
 	public func updateFriend(request: Request) throws -> ResponseRepresentable {
 		let friend = try request.friend()
 		
+		guard friend.userId.int == request.headers["userId"]?.int else {
+			throw Abort(.forbidden, reason: "You cannot edit someones friend request!")
+		}
+		
 		friend.accepted = request.json?["accepted"]?.bool ?? friend.accepted
+		
+		if friend.accepted {
+			guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+			let emailController = try EmailController(config: config)
+			
+			guard let user = try friend.user.get(), let friendOfUser = try friend.friend.get() else {
+				throw Abort.notFound
+			}
+			
+			try emailController.sendAcceptedFriendRequestEmail(from: user, to: friendOfUser)
+		}
 		
 		try friend.save()
 		
@@ -51,6 +66,13 @@ public final class UserController {
 		
 		let friend = Friend(userId: Identifier(userId), friendsId: Identifier(friendId))
 		try friend.save()
+		
+		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+		let emailController = try EmailController(config: config)
+		
+		guard let user = try friend.user.get(), let friendOfUser = try friend.friend.get() else { throw Abort.notFound }
+		
+		try emailController.sendFriendRequestEmail(from: user, to: friendOfUser)
 		
 		return JSON([:])
 	}
