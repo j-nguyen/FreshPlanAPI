@@ -11,15 +11,26 @@ import HTTP
 
 public final class UserController {
 	public func addRoutes(_ builder: RouteBuilder) {
+		// user routes
 		builder.grouped(TokenMiddleware()).get("user", handler: getAllUsers)
 		builder.grouped(TokenMiddleware()).get("user", ":userId", handler: getUser)
 		builder.grouped(TokenMiddleware()).patch("user", ":userId", handler: updateUser)
-		
+		// invitation routes
 		builder.grouped(TokenMiddleware()).post("invitation", ":invitationId", handler: createInvitation)
 		builder.grouped(TokenMiddleware()).get("invitation", ":invitationId", handler: getAllInvitation)
 		builder.grouped(TokenMiddleware()).get("invitation", ":invitationId", handler: getInvitation)
 		builder.grouped(TokenMiddleware()).patch("invitation", ":invitationId", handler: updateInvitation)
 		builder.grouped(TokenMiddleware()).delete("invitation", ":invitationId", handler: deleteInvitation)
+		// friend routes
+		builder.grouped(TokenMiddleware()).get("user", ":userId", "friends", handler: getFriends)
+	}
+	
+	public func getFriends(request: Request) throws -> ResponseRepresentable {
+		guard let userId = request.parameters["userId"]?.int else {
+			throw Abort.badRequest
+		}
+		
+		
 	}
 	
 	// get all the users
@@ -42,9 +53,16 @@ public final class UserController {
 	
 	// update user
 	public func updateUser(request: Request) throws -> ResponseRepresentable {
-		guard let userId = request.parameters["userId"]?.int else {
-			throw Abort.badRequest
+		guard
+			let headerUserId = request.headers["userId"]?.int,
+			let userId = request.parameters["userId"]?.int else {
+				throw Abort.badRequest
 		}
+		
+		guard headerUserId == userId else {
+			throw Abort(.forbidden, reason: "You can only edit your own user!")
+		}
+		
 		guard let user = try User.makeQuery().filter("userId", userId).first() else {
 			throw Abort.notFound
 		}
