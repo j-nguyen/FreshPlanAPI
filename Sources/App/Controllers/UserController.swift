@@ -17,8 +17,24 @@ public final class UserController {
 		builder.grouped(TokenMiddleware()).patch("user", ":userId", handler: updateUser)
 		// friend routes
 		builder.grouped(TokenMiddleware()).get("user", ":userId", "friends", handler: getAllFriends)
-		builder.grouped(TokenMiddleware()).get("user", ":userId", "friends", ":friendId", handler: getFriend)
 		builder.grouped(TokenMiddleware()).post("user", ":userId", "friends", handler: addFriend)
+		builder.grouped(TokenMiddleware()).get("user", ":userId", "friends", ":friendId", handler: getFriend)
+		builder.grouped(TokenMiddleware()).delete("user", ":userId", "friends", ":friendId", handler: removeFriend)
+	}
+	
+	public func removeFriend(request: Request) throws -> ResponseRepresentable {
+		guard let userId = request.parameters["userId"]?.int,
+			let friendId = request.parameters["friendId"]?.int else {
+				throw Abort.badRequest
+		}
+		
+		guard let friend = try Friend.makeQuery().filter("userId", userId).and({ try $0.filter("friendId", friendId) }).first() else {
+			throw Abort.notFound
+		}
+		
+		try friend.delete()
+		
+		return JSON([:])
 	}
 	
 	public func addFriend(request: Request) throws -> ResponseRepresentable {
@@ -55,7 +71,7 @@ public final class UserController {
 			throw Abort.badRequest
 		}
 		
-		let friends = try Friends.makeQuery().filter("userId", userId).all()
+		let friends = try Friend.makeQuery().filter("userId", userId).all()
 		
 		return try friends.makeJSON()
 	}

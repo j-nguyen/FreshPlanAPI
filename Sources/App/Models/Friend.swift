@@ -37,11 +37,11 @@ public final class Friend: Model, Timestampable {
 }
 
 extension Friend {
-	public var user: Parent<Friends, User> {
+	public var user: Parent<Friend, User> {
 		return parent(id: userId)
 	}
 	
-	public var friend: Parent<Friends, User> {
+	public var friend: Parent<Friend, User> {
 		return parent(id: friendsId)
 	}
 }
