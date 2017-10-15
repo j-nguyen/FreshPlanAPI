@@ -25,8 +25,8 @@ public final class InvitationController {
 				throw Abort.badRequest
 		}
 		
-		//model
-		let invitation = Invitation (userId: Identifier(userId), meetupId: Identifier(meetupId))
+		// create invitation
+		let invitation = Invitation(userId: Identifier(userId), meetupId: Identifier(meetupId))
 		try invitation.save()
 		
 		return JSON([:])
@@ -34,56 +34,44 @@ public final class InvitationController {
 	
 	// get all inv
 	public func getAllInvitation(request: Request) throws -> ResponseRepresentable {
-		guard let userId = request.headers["userId"]?.int else {
-			throw Abort.badRequest
-			
-		}
+		guard let userId = request.headers["userId"]?.int else { throw Abort.badRequest }
 		let invitation = try Invitation.makeQuery().filter("userId", userId).all()
 		return try invitation.makeJSON()
 	}
 	
 	// get inv by id
 	public func getInvitation(request: Request) throws -> ResponseRepresentable {
-		guard let userId = request.headers["userId"]?.int else {
-			throw Abort.badRequest
-			
-		}
-		guard let invitationId = request.parameters["invitationId"]?.int else {
-			throw Abort.badRequest
-		}
-		guard let invitation = try Invitation.makeQuery().filter("id", invitationId).and({try $0.filter("userId", userId)}).first() else {
-			throw Abort.notFound
-		}
-		
+		let invitation = try request.invitation()
 		return try invitation.makeJSON()
 	}
 	
 	// update
 	public func updateInvitation(request: Request) throws -> ResponseRepresentable {
-		guard let invitationId = request.parameters["invitationId"]?.int else {
-			throw Abort.badRequest
-		}
-		guard let invitation = try Invitation.makeQuery().filter("invitationId", invitationId).first() else {
-			throw Abort.notFound
-		}
-		
+		let invitation = try request.invitation()
 		invitation.accepted = request.json?["accepted"]?.bool ?? invitation.accepted
+		try invitation.save()
 		return JSON([:])
 	}
 	
 	// delete
 	public func deleteInvitation(request: Request) throws -> ResponseRepresentable {
-		guard let userId = request.headers["userId"]?.int else {
-			throw Abort.badRequest
-			
-		}
-		guard let invitationId = request.parameters["invitationId"]?.int else {
-			throw Abort.badRequest
-		}
-		guard let invitation = try Invitation.makeQuery().filter("id", invitationId).and({try $0.filter("userId", userId)}).first() else {
-			throw Abort.notFound
-		}
+		let invitation = try request.invitation()
 		try invitation.delete()
 		return JSON([:])
+	}
+}
+
+extension Request {
+	fileprivate func invitation() throws -> Invitation {
+		guard let id = parameters["invitationId"]?.int, let userId = headers["userId"]?.int else {
+			throw Abort.badRequest
+		}
+		
+		guard let invitation = try Invitation.makeQuery().filter("id", id)
+			.and({ try $0.filter("userId", userId) }).first() else {
+				throw Abort.notFound
+		}
+		
+		return invitation
 	}
 }
