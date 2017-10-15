@@ -9,7 +9,7 @@ import Vapor
 import FluentProvider
 
 public final class Meetup: Model, Timestampable {
-    
+	
 	public var meetupTypeId: Identifier
 	public var userId: Identifier
 	public var title: String
@@ -62,10 +62,10 @@ extension Meetup {
 	public var user: Parent<Meetup, User> {
 		return parent(id: userId)
 	}
-    
-    public var invitations: Children<Meetup, Invitation> {
-        return children()
-    }
+	
+	public var invitations: Children<Meetup, Invitation> {
+		return children()
+	}
 }
 
 extension Meetup.MeetType {
@@ -73,7 +73,7 @@ extension Meetup.MeetType {
 		guard
 			let type = try MeetupType.makeQuery().filter("type", self.rawValue).first(),
 			let id = type.id else {
-			throw Abort.notFound
+				throw Abort.notFound
 		}
 		return id
 	}
@@ -100,13 +100,13 @@ extension Meetup: Preparation {
 
 extension Meetup: JSONConvertible {
 	public convenience init(json: JSON) throws {
-	 self.init(
+		self.init(
 			meetupTypeId: try json.get("meetupTypeId"),
 			userId: try json.get("userId"),
-		  title: try json.get("title"),
-		  startDate: try json.get("startDate"),
-		  endDate: try json.get("endDate"),
-		  metadata: try json.get("metadata")
+			title: try json.get("title"),
+			startDate: try json.get("startDate"),
+			endDate: try json.get("endDate"),
+			metadata: try json.get("metadata")
 		)
 	}
 	
@@ -118,7 +118,7 @@ extension Meetup: JSONConvertible {
 		try json.set("title", title)
 		try json.set("startDate", startDate)
 		try json.set("endDate", endDate)
-        try json.set("invitations", invitations.all().makeJSON())
+		try json.set("invitations", invitations.all().makeJSON())
 		try json.set("metadata", metadata)
 		return json
 	}
