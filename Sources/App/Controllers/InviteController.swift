@@ -68,6 +68,17 @@ public final class InviteController {
 		let invite = try request.invite()
 		invite.accepted = request.json?["accepted"]?.bool ?? invite.accepted
 		try invite.save()
+		
+		if invite.accepted {
+			guard let user = try invite.user.get() else { throw Abort.notFound }
+			guard let meetup = try invite.meetup.get() else { throw Abort.notFound }
+			guard let invitee = try meetup.user.get() else { throw Abort.notFound }
+			// attemp to send email
+			guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+			let emailController = try EmailController(config: config)
+			try emailController.sendInvitationEmail(from: user, to: invitee, meetup: meetup.title)
+		}
+		
 		return JSON([:])
 	}
 	

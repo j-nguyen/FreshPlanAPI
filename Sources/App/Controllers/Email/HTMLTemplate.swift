@@ -75,13 +75,13 @@ extension HTMLTemplate {
 		case let .confirmation(user):
 			return String.format(file, user.firstName, user.lastName)
 		case let .invite(from, to, meetup):
-			return String.format(file, from.displayName, to.displayName, meetup)
+			return String.format(file, to.displayName, from.displayName, meetup)
 		case let .friendRequest(from, to):
 			return String.format(file, from.displayName, to.displayName)
 		case let .acceptFriend(from, to):
 			return String.format(file, from.displayName, to.displayName)
 		case let .acceptInvite(from, to, meetup):
-			return String.format(file, from.displayName, to.displayName, meetup)
+			return String.format(file, to.displayName, from.displayName, meetup)
 		}
 	}
 }
