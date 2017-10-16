@@ -21,6 +21,7 @@ enum HTMLTemplate {
 	case invite(from: User, to: User, meetup: String)
 	case friendRequest(from: User, to: User)
 	case acceptFriend(from: User, to: User)
+	case acceptInvite(from: User, to: User, meetup: String)
 }
 
 extension HTMLTemplate {
@@ -37,6 +38,8 @@ extension HTMLTemplate {
 			return "\(currentDirectory)/friendRequest.html"
 		case .acceptFriend:
 			return "\(currentDirectory)/acceptFriend.html"
+		case .acceptInvite:
+			return "\(currentDirectory)/acceptInvite.html"
 		}
 	}
 	
@@ -52,6 +55,8 @@ extension HTMLTemplate {
 			return "FreshPlan - Friend Request"
 		case .acceptFriend:
 			return "Accepted Friend Request"
+		case .acceptInvite(let user, _, _):
+			return "Accepted Invitation - \(user.displayName)"
 		}
 	}
 	
@@ -70,11 +75,13 @@ extension HTMLTemplate {
 		case let .confirmation(user):
 			return String.format(file, user.firstName, user.lastName)
 		case let .invite(from, to, meetup):
-			return String.format(file, from.displayName, to.displayName, meetup)
+			return String.format(file, to.displayName, from.displayName, meetup)
 		case let .friendRequest(from, to):
 			return String.format(file, from.displayName, to.displayName)
 		case let .acceptFriend(from, to):
 			return String.format(file, from.displayName, to.displayName)
+		case let .acceptInvite(from, to, meetup):
+			return String.format(file, to.displayName, from.displayName, meetup)
 		}
 	}
 }
