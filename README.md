@@ -4,6 +4,7 @@ API created in Vapor, and to be used for school project.
 
 ## Requirements
 - postgresql (Homebrew)
+- Vapor 2 and XCode 9
 
 ## Set-up Project
 
