@@ -18,6 +18,6 @@ public final class V1Collection: EmptyInitializable, RouteCollection {
 		// add from the controllers
 		AuthController().addRoutes(api)
 		MeetupController().addRoutes(api)
-		InvitationController().addRoutes(api)
+		InviteController().addRoutes(api)
 	}
 }

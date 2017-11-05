@@ -77,7 +77,7 @@ public final class AuthController {
 		}
 		
 		guard let user = try User.makeQuery().filter("email", email).first() else {
-			throw Abort(.notFound, reason: "User does not exist!")
+			throw Abort(.notFound, reason: "This user does not exist! Did you create an account?")
 		}
 		
 		guard let userId = user.id else { throw Abort.notFound }
@@ -160,7 +160,7 @@ public final class AuthController {
 		}
 		
 		guard let user = try User.makeQuery().filter("email", email).first() else {
-			throw Abort(.notFound, reason: "User does not exist!")
+			throw Abort(.notFound, reason: "This user does not exist! Did you create an account?")
 		}
 		
 		guard try BCrypt.Hash.verify(message: password, matches: user.password) == true else {
