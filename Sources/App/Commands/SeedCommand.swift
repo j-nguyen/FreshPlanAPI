@@ -69,7 +69,7 @@ public final class SeedCommand: Command {
 	fileprivate func addMeetups() throws {
 		for i in 1...5 {
 			let user = try User.find(i)!
-			for j in 1...3 {
+			for j in 1...2 {
 				for k in 1...5 {
 					let currentDate = Date()
 					let meetup = Meetup(
