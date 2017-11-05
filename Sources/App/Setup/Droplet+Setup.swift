@@ -9,6 +9,10 @@ extension Droplet {
 		try collection(V1Collection.self)
 	}
 	
+	private func setupRoutes() {
+		
+	}
+	
 	private func setupSeedableModels() {
 		User.database = database
 		Verification.database = database

@@ -23,14 +23,14 @@ public final class Friend: Model, Timestampable {
 	
 	public init(row: Row) throws {
 		userId = try row.get("userId")
-		friendsId = try row.get("friendsId")
+		friendsId = try row.get("friendId")
 		accepted = try row.get("accepted")
 	}
 	
 	public func makeRow() throws -> Row {
 		var row = Row()
 		try row.set("userId", userId)
-		try row.set("friendsId", friendsId)
+		try row.set("friendId", friendsId)
 		try row.set("accepted", accepted)
 		return row
 	}
