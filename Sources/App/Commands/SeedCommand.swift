@@ -43,7 +43,7 @@ public final class SeedCommand: Command {
 			)
 			user.verified = true
 			console.print("Attempting to add \(user.displayName)")
-			try user.save()
+			try User.register(user: user)
 			console.print("User added.")
 		}
 		console.print("Added 25 users.")
