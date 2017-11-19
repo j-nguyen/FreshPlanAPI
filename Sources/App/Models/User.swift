@@ -95,7 +95,7 @@ extension User {
 			throw Abort(.conflict, metadata: "Your password must be at least a minimum length of 8")
 		}
 		
-		user.password = try BCrypt.Hash.make(message: user.password).makeString()
+		user.password = try Hash.make(message: user.password).makeString()
 	
 		try user.save()
 	}
