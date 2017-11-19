@@ -163,7 +163,7 @@ public final class AuthController {
 			throw Abort(.notFound, reason: "This user does not exist! Did you create an account?")
 		}
 		
-		guard try BCrypt.Hash.verify(message: password, matches: user.password) == true else {
+		guard try Hash.verify(message: password, matches: user.password) else {
 			throw Abort(.unauthorized, reason: "Invalid credentials!")
 		}
 		
