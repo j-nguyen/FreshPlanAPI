@@ -11,11 +11,11 @@ import HTTP
 public final class InviteController {
 	public func addRoutes(_ builder: RouteBuilder) {
 		// invitation routes
-		builder.grouped(TokenMiddleware()).post("invite", handler: createInvite)
-		builder.grouped(TokenMiddleware()).get("invite", handler: getAllInvites)
-		builder.grouped(TokenMiddleware()).get("invite", ":inviteId", handler: getInvite)
-		builder.grouped(TokenMiddleware()).patch("invite", ":inviteId", handler: updateInvite)
-		builder.grouped(TokenMiddleware()).delete("invite", ":inviteId", handler: deleteInvite)
+		builder.grouped(TokenMiddleware()).post("invites", handler: createInvite)
+		builder.grouped(TokenMiddleware()).get("invites", handler: getAllInvites)
+		builder.grouped(TokenMiddleware()).get("invites", ":inviteId", handler: getInvite)
+		builder.grouped(TokenMiddleware()).patch("invites", ":inviteId", handler: updateInvite)
+		builder.grouped(TokenMiddleware()).delete("invites", ":inviteId", handler: deleteInvite)
 	}
 
 	//create user invitation
