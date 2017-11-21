@@ -11,11 +11,11 @@ import HTTP
 public final class MeetupController {
 	public func addRoutes(_ builder: RouteBuilder) {
 		// add the token middleware here as a default to make sure all routes are secured now
-		builder.grouped(TokenMiddleware()).post("meetup", handler: createMeetup)
-		builder.grouped(TokenMiddleware()).get("meetup", handler: getAllMeetups)
-		builder.grouped(TokenMiddleware()).get("meetup", ":meetupId", handler: getMeetup)
-		builder.grouped(TokenMiddleware()).patch("meetup", ":meetupId", handler: updateMeetup)
-		builder.grouped(TokenMiddleware()).delete("meetup", ":meetupId", handler: deleteMeetup)
+		builder.grouped(TokenMiddleware()).post("meetups", handler: createMeetup)
+		builder.grouped(TokenMiddleware()).get("meetups", handler: getAllMeetups)
+		builder.grouped(TokenMiddleware()).get("meetups", ":meetupId", handler: getMeetup)
+		builder.grouped(TokenMiddleware()).patch("meetups", ":meetupId", handler: updateMeetup)
+		builder.grouped(TokenMiddleware()).delete("meetups", ":meetupId", handler: deleteMeetup)
 	}
 	
 	// create the meetup.

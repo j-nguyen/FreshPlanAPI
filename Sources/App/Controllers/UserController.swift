@@ -12,15 +12,15 @@ import HTTP
 public final class UserController {
 	public func addRoutes(_ builder: RouteBuilder) {
 		// user routes
-		builder.grouped(TokenMiddleware()).get("user", handler: getAllUsers)
-		builder.grouped(TokenMiddleware()).get("user", ":userId", handler: getUser)
-		builder.grouped(TokenMiddleware()).patch("user", ":userId", handler: updateUser)
+		builder.grouped(TokenMiddleware()).get("users", handler: getAllUsers)
+		builder.grouped(TokenMiddleware()).get("users", ":userId", handler: getUser)
+		builder.grouped(TokenMiddleware()).patch("users", ":userId", handler: updateUser)
 		// friend routes
-		builder.grouped(TokenMiddleware()).get("user", ":userId", "friends", handler: getAllFriends)
-		builder.grouped(TokenMiddleware()).post("user", ":userId", "friends", handler: addFriend)
-		builder.grouped(TokenMiddleware()).get("user", ":userId", "friends", ":friendId", handler: getFriend)
-		builder.grouped(TokenMiddleware()).delete("user", ":userId", "friends", ":friendId", handler: removeFriend)
-		builder.grouped(TokenMiddleware()).patch("user", ":userId", "friends", ":friendId", handler: updateFriend)
+		builder.grouped(TokenMiddleware()).get("users", ":userId", "friends", handler: getAllFriends)
+		builder.grouped(TokenMiddleware()).post("users", ":userId", "friends", handler: addFriend)
+		builder.grouped(TokenMiddleware()).get("users", ":userId", "friends", ":friendId", handler: getFriend)
+		builder.grouped(TokenMiddleware()).delete("users", ":userId", "friends", ":friendId", handler: removeFriend)
+		builder.grouped(TokenMiddleware()).patch("users", ":userId", "friends", ":friendId", handler: updateFriend)
 	}
 	
 	public func updateFriend(request: Request) throws -> ResponseRepresentable {
