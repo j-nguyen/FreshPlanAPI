@@ -213,15 +213,15 @@ public final class AuthController {
 		let token = try JWT(payload: payload, signer: HS512(key: "verify".bytes))
 		let tokenString = try token.createToken()
 		
-		// save this into our db.
-		let verification = Verification(userId: userId, token: tokenString)
-		try verification.save()
-		
 		// send email
 		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
 		
 		let emailController = try EmailController(config: config)
 		try emailController.sendVerificationEmail(to: user, code: code)
+		
+		// save this into our db.
+		let verification = Verification(userId: userId, token: tokenString)
+		try verification.save()
 		
 		return JSON([:])
 	}
