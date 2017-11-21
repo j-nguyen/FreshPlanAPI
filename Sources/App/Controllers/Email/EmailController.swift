@@ -46,8 +46,10 @@ public class EmailController {
 		let request = Request(method: .post, uri: "\(host)/transmissions", headers: ["Content-Type": "application/json", "Authorization": apiKey], body: json.makeBody())
 		let response = try droplet?.client.respond(to: request)
 		
-		guard let statusCode = response?.status.statusCode, (200..<299).contains(statusCode) else {
-			throw Abort.serverError
+		if let statusCode = response?.status.statusCode, statusCode == 400 {
+			// delete the user and throw an invalid email address
+			try user.delete()
+			throw Abort(.badRequest, reason: "This is an unverified email address! Please use a verified one.")
 		}
 	}
 	
