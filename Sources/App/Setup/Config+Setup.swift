@@ -1,5 +1,6 @@
 import FluentProvider
 import PostgreSQLProvider
+import SendGridProvider
 
 extension Config {
 	public func setup() throws {
@@ -20,6 +21,7 @@ extension Config {
 	private func setupProviders() throws {
 		try addProvider(FluentProvider.Provider.self)
 		try addProvider(PostgreSQLProvider.Provider.self)
+    try addProvider(SendGridProvider.Provider.self)
 	}
 	
 	/// Add all models that should have their

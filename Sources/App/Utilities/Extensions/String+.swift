@@ -20,11 +20,7 @@ extension String {
 	}
 	
 	func generatePlaceholder() throws -> String {
-		// TODO : Fix this stupid guard statement soon
-        guard let firstLetter = self.characters.first else {
-            throw Abort.notFound
-            
-        }
+    guard let firstLetter = first else { throw Abort.notFound }
 		return "https://via.placeholder.com/300?text=\(firstLetter)"
 	}
 }

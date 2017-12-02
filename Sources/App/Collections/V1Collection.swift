@@ -14,11 +14,11 @@ public final class V1Collection: EmptyInitializable, RouteCollection {
 	public func build(_ builder: RouteBuilder) throws {
 		// gets the versioning for future release
 		let api = builder.grouped("api", "v1")
-		
 		// add from the controllers
 		AuthController().addRoutes(api)
-		MeetupController().addRoutes(api)
-		InviteController().addRoutes(api)
-		UserController().addRoutes(api)
+    try api.grouped(TokenMiddleware()).resource("users", UserController.self)
+    try api.grouped(TokenMiddleware()).grouped("users", ":userId").resource("friends", FriendController.self)
+    try api.grouped(TokenMiddleware()).resource("meetup", MeetupController.self)
+    try api.grouped(TokenMiddleware()).resource("invites", InviteController.self)
 	}
 }

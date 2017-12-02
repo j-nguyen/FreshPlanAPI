@@ -8,18 +8,11 @@
 import Vapor
 import HTTP
 
-public final class InviteController {
-	public func addRoutes(_ builder: RouteBuilder) {
-		// invitation routes
-		builder.grouped(TokenMiddleware()).post("invites", handler: createInvite)
-		builder.grouped(TokenMiddleware()).get("invites", handler: getAllInvites)
-		builder.grouped(TokenMiddleware()).get("invites", ":inviteId", handler: getInvite)
-		builder.grouped(TokenMiddleware()).patch("invites", ":inviteId", handler: updateInvite)
-		builder.grouped(TokenMiddleware()).delete("invites", ":inviteId", handler: deleteInvite)
-	}
-
+public final class InviteController: ResourceRepresentable, EmptyInitializable {
+  public init() { }
+  
 	//create user invitation
-	public func createInvite(request: Request) throws -> ResponseRepresentable {
+	public func createInvite(_ request: Request) throws -> ResponseRepresentable {
 		guard let userId = request.headers["userId"]?.int,
 			let inviteeId = request.json?["userId"]?.int,
 			let meetupId = request.json?["meetupId"]?.int else {
@@ -43,7 +36,7 @@ public final class InviteController {
 		try invite.save()
 		
 		// send email
-		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+		guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
 		let emailController = try EmailController(config: config)
 		try emailController.sendInvitationEmail(from: user, to: invitee, meetup: meetup.title)
 		
@@ -51,43 +44,50 @@ public final class InviteController {
 	}
 	
 	// get all inv
-	public func getAllInvites(request: Request) throws -> ResponseRepresentable {
+	public func getAllInvites(_ request: Request) throws -> ResponseRepresentable {
 		guard let userId = request.headers["userId"]?.int else { throw Abort.badRequest }
 		let invite = try Invitation.makeQuery().filter("userId", userId).all()
 		return try invite.makeJSON()
 	}
 	
 	// get inv by id
-	public func getInvite(request: Request) throws -> ResponseRepresentable {
-		let invite = try request.invite()
+  public func getInvite(_ request: Request, invite: Invitation) throws -> ResponseRepresentable {
 		return try invite.makeJSON()
 	}
 	
 	// update
-	public func updateInvite(request: Request) throws -> ResponseRepresentable {
-		let invite = try request.invite()
-		invite.accepted = request.json?["accepted"]?.bool ?? invite.accepted
-		try invite.save()
+  public func updateInvite(_ request: Request, invite: Invitation) throws -> ResponseRepresentable {
 		
+    invite.accepted = request.json?["accepted"]?.bool ?? invite.accepted
+		try invite.save()
+    
 		if invite.accepted {
 			guard let user = try invite.user.get() else { throw Abort.notFound }
 			guard let meetup = try invite.meetup.get() else { throw Abort.notFound }
 			guard let invitee = try meetup.user.get() else { throw Abort.notFound }
 			// attemp to send email
-			guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+			guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
 			let emailController = try EmailController(config: config)
 			try emailController.sendInvitationEmail(from: user, to: invitee, meetup: meetup.title)
 		}
-		
-		return JSON([:])
+		return Response(status: .ok)
 	}
 	
 	// delete
-	public func deleteInvite(request: Request) throws -> ResponseRepresentable {
-		let invite = try request.invite()
+  public func deleteInvite(_ request: Request, invite: Invitation) throws -> ResponseRepresentable {
 		try invite.delete()
-		return JSON([:])
+    return Response(status: .ok)
 	}
+  
+  public func makeResource() -> Resource<Invitation> {
+    return Resource(
+      index: getAllInvites,
+      store: createInvite,
+      show: getInvite,
+      update: updateInvite,
+      destroy: deleteInvite
+    )
+  }
 }
 
 extension Request {
