@@ -59,6 +59,7 @@ public final class SeedCommand: Command {
 				// attempt to add friend here
 				console.print("User: \(user.displayName) adding \(secondaryUser.displayName)")
 				let friend = Friend(userId: user.id!, friendsId: secondaryUser.id!)
+        friend.accepted = secondaryId < 12
 				try friend.save()
 				console.print("Friend added.")
 			}

@@ -8,15 +8,8 @@
 import Vapor
 import HTTP
 
-public final class MeetupController {
-	public func addRoutes(_ builder: RouteBuilder) {
-		// add the token middleware here as a default to make sure all routes are secured now
-		builder.grouped(TokenMiddleware()).post("meetups", handler: createMeetup)
-		builder.grouped(TokenMiddleware()).get("meetups", handler: getAllMeetups)
-		builder.grouped(TokenMiddleware()).get("meetups", ":meetupId", handler: getMeetup)
-		builder.grouped(TokenMiddleware()).patch("meetups", ":meetupId", handler: updateMeetup)
-		builder.grouped(TokenMiddleware()).delete("meetups", ":meetupId", handler: deleteMeetup)
-	}
+public final class MeetupController: ResourceRepresentable, EmptyInitializable {
+  public init() { }
 	
 	// create the meetup.
 	public func createMeetup(request: Request) throws -> ResponseRepresentable {
@@ -73,14 +66,11 @@ public final class MeetupController {
 	}
 	
 	// get meetup based on the id
-	public func getMeetup(request: Request) throws -> ResponseRepresentable {
-		let meetup = try request.meetup()
+  public func getMeetup(_ request: Request, meetup: Meetup) throws -> ResponseRepresentable {
 		return try meetup.makeJSON()
 	}
 	
-	public func updateMeetup(request: Request) throws -> ResponseRepresentable {
-		let meetup = try request.meetup()
-		
+  public func updateMeetup(_ request: Request, meetup: Meetup) throws -> ResponseRepresentable {
 		if let meetupType = request.json?["meetupType"]?.string {
 			guard let meetType = Meetup.MeetType(rawValue: meetupType) else {
 				throw Abort.badRequest
@@ -96,14 +86,23 @@ public final class MeetupController {
 		
 		try meetup.save()
 		
-		return JSON([:])
+    return Response(status: .ok)
 	}
 	
-	public func deleteMeetup(request: Request) throws -> ResponseRepresentable {
-		let meetup = try request.meetup()
+  public func deleteMeetup(_ request: Request, meetup: Meetup) throws -> ResponseRepresentable {
 		try meetup.delete()
-		return JSON([:])
+    return Response(status: .ok)
 	}
+  
+  public func makeResource() -> Resource<Meetup> {
+    return Resource(
+      index: getAllMeetups,
+      store: createMeetup,
+      show: getMeetup,
+      update: updateMeetup,
+      destroy: deleteMeetup
+    )
+  }
 }
 
 extension Request {
