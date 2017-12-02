@@ -5,15 +5,7 @@ extension Droplet {
 		droplet = self
 		// set up models
 		setupSeedableModels()
-		setupRoutes()
-		// Do any additional droplet setup
-		try collection(V1Collection.self)
-	}
-	
-	private func setupRoutes() {
-		get("/") { req in
-			throw Abort.unauthorized
-		}
+		try setupRoutes()
 	}
 	
 	private func setupSeedableModels() {
