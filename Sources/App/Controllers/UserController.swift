@@ -11,18 +11,6 @@ import HTTP
 
 public final class UserController: EmptyInitializable, ResourceRepresentable {
   public init() { }
-//  public func addRoutes(_ builder: RouteBuilder) {
-		// user routes
-//    builder.grouped(TokenMiddleware()).get("users", handler: getAllUsers)
-//    builder.grouped(TokenMiddleware()).get("users", ":userId", handler: getUser)
-//    builder.grouped(TokenMiddleware()).patch("users", ":userId", handler: updateUser)
-		// friend routes
-//    builder.grouped(TokenMiddleware()).get("users", ":userId", "friends", handler: getAllFriends)
-//    builder.grouped(TokenMiddleware()).post("users", ":userId", "friends", handler: addFriend)
-//    builder.grouped(TokenMiddleware()).get("users", ":userId", "friends", ":friendId", handler: getFriend)
-//    builder.grouped(TokenMiddleware()).delete("users", ":userId", "friends", ":friendId", handler: removeFriend)
-//    builder.grouped(TokenMiddleware()).patch("users", ":userId", "friends", ":friendId", handler: updateFriend)
-//  }
 	
 	// get all the users
 	public func getAllUsers(_ request: Request) throws -> ResponseRepresentable {
