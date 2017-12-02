@@ -17,9 +17,9 @@ public final class V1Collection: EmptyInitializable, RouteCollection {
 		
 		// add from the controllers
 		AuthController().addRoutes(api)
-		MeetupController().addRoutes(api)
 		UserController().addRoutes(api)
     
+    try api.grouped(TokenMiddleware()).resource("meetup", MeetupController.self)
     try api.grouped(TokenMiddleware()).resource("invites", InviteController.self)
 	}
 }
