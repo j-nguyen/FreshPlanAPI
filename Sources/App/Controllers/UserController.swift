@@ -33,7 +33,7 @@ public final class UserController {
 		friend.accepted = request.json?["accepted"]?.bool ?? friend.accepted
 		
 		if friend.accepted {
-			guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+			guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
 			let emailController = try EmailController(config: config)
 			
 			guard let user = try friend.user.get(), let friendOfUser = try friend.friend.get() else {
@@ -67,7 +67,7 @@ public final class UserController {
 		let friend = Friend(userId: Identifier(userId), friendsId: Identifier(friendId))
 		try friend.save()
 		
-		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+		guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
 		let emailController = try EmailController(config: config)
 		
 		guard let user = try friend.user.get(), let friendOfUser = try friend.friend.get() else { throw Abort.notFound }
