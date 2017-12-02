@@ -65,11 +65,11 @@ extension HTMLTemplate {
 		return string
 	}
 	
-	public static func makeMessage(_ template: HTMLTemplate) throws -> String {
+	public func makeMessage() throws -> String {
 		// read the template
-		let file = try template.type()
+		let file = try self.type()
 		
-		switch template {
+		switch self {
 		case let .verification(user, code):
 			return String.format(file, user.firstName, user.lastName, code)
 		case let .confirmation(user):

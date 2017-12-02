@@ -7,6 +7,5 @@
 
 import Vapor
 
-public var serverEmail = "do-not-reply@johnnynguyen.ca"
-
 public var droplet: Droplet?
+public var serverEmail: String = "do-not-reply@johnnynguyen.ca"
