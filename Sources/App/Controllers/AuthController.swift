@@ -53,7 +53,7 @@ public final class AuthController {
 		try payload.set("userId", userId)
 		try payload.set("code", code)
 		
-		// creat the token string
+		// create the token string
 		let token = try JWT(payload: payload, signer: HS512(key: "verify".bytes))
 		let tokenString = try token.createToken()
 		
@@ -61,8 +61,7 @@ public final class AuthController {
 		try userVerify.save()
 		
 		// send email
-		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
-		
+		guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
 		let emailController = try EmailController(config: config)
 		try emailController.sendVerificationEmail(to: user, code: code)
 		
@@ -123,8 +122,7 @@ public final class AuthController {
 			try verification.save()
 			
 			// send email
-			guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
-			
+			guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
 			let emailController = try EmailController(config: config)
 			try emailController.sendVerificationEmail(to: user, code: code)
 			
@@ -141,7 +139,7 @@ public final class AuthController {
 		// once it's verified, we can also delete our record as well
 		try userVerify.delete()
 		
-		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+		guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
 		
 		let emailController = try EmailController(config: config)
 		try emailController.sendConfirmationEmail(to: user)
@@ -214,8 +212,7 @@ public final class AuthController {
 		let tokenString = try token.createToken()
 		
 		// send email
-		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
-		
+		guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
 		let emailController = try EmailController(config: config)
 		try emailController.sendVerificationEmail(to: user, code: code)
 		

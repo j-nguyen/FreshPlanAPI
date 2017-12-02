@@ -43,7 +43,7 @@ public final class InviteController {
 		try invite.save()
 		
 		// send email
-		guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+		guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
 		let emailController = try EmailController(config: config)
 		try emailController.sendInvitationEmail(from: user, to: invitee, meetup: meetup.title)
 		
@@ -74,7 +74,7 @@ public final class InviteController {
 			guard let meetup = try invite.meetup.get() else { throw Abort.notFound }
 			guard let invitee = try meetup.user.get() else { throw Abort.notFound }
 			// attemp to send email
-			guard let config = droplet?.config["sparkpost"] else { throw Abort.notFound }
+			guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
 			let emailController = try EmailController(config: config)
 			try emailController.sendInvitationEmail(from: user, to: invitee, meetup: meetup.title)
 		}
