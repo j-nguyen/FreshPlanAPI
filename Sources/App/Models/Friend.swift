@@ -67,11 +67,8 @@ extension Friend: JSONConvertible {
 	}
 	
 	public func makeJSON() throws -> JSON {
-		var json = JSON()
-		try json.set("id", id)
-		try json.set("user", user.get()?.makeJSON())
-		try json.set("friend", friend.get()?.makeJSON())
-		try json.set("accepted", accepted)
-		return json
+		var json = try friend.get()?.makeJSON()
+		try json?.set("accepted", accepted)
+    return json ?? JSON()
 	}
 }
