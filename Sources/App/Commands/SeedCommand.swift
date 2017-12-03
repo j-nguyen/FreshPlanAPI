@@ -57,11 +57,13 @@ public final class SeedCommand: Command {
 			for secondaryId in 1...25 {
 				let secondaryUser = try User.find(secondaryId)!
 				// attempt to add friend here
-				console.print("User: \(user.displayName) adding \(secondaryUser.displayName)")
-				let friend = Friend(userId: user.id!, friendsId: secondaryUser.id!)
-        friend.accepted = secondaryId < 12
-				try friend.save()
-				console.print("Friend added.")
+        // it can't be the same user though.
+        if primaryId != secondaryId {
+          console.print("User: \(user.displayName) adding \(secondaryUser.displayName)")
+          let friend = Friend(userId: user.id!, friendsId: secondaryUser.id!)
+          try friend.save()
+          console.print("Friend added.")
+        }
 			}
 		}
 		console.print("Added all friends")
