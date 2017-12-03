@@ -17,8 +17,12 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
       let friendId = request.parameters["friendId"]?.int else {
         throw Abort.badRequest
     }
+  
+    guard let friend = try Friend.makeQuery().filter("friendId", friendId).first() else {
+      throw Abort.notFound
+    }
     
-    guard friend.userId.int == request.headers["userId"]?.int else {
+    guard userId == request.headers["userId"]?.int && friend.userId.int == userId else {
       throw Abort(.forbidden, reason: "You cannot edit someones friend request!")
     }
     
@@ -40,8 +44,22 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     return Response(status: .ok)
   }
   
-  public func removeFriend(_ request: Request, friend: Friend) throws -> ResponseRepresentable {
+  public func removeFriend(_ request: Request) throws -> ResponseRepresentable {
+    guard let userId = request.parameters["userId"]?.int,
+      let friendId = request.parameters["friendId"]?.int else {
+        throw Abort.badRequest
+    }
+  
+    guard let friend = try Friend.makeQuery().filter("friendId", friendId).first() else {
+      throw Abort.notFound
+    }
+    
+    guard userId == request.headers["userId"]?.int && friend.userId.int == userId else {
+      throw Abort(.forbidden, reason: "You cannot edit someones friend request!")
+    }
+    
     try friend.delete()
+    
     return Response(status: .ok)
   }
   
