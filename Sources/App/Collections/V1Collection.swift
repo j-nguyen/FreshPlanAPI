@@ -17,7 +17,12 @@ public final class V1Collection: EmptyInitializable, RouteCollection {
 		// add from the controllers
 		AuthController().addRoutes(api)
     try api.grouped(TokenMiddleware()).resource("users", UserController.self)
-    try api.grouped(TokenMiddleware()).grouped("users", ":userId").resource("friends", FriendController.self)
+    //: MARK - Friends
+    let friendController = FriendController()
+    api.grouped(TokenMiddleware()).group("users", ":userId") { friend in
+      friend.resource("friends", friendController)
+      friend.get("friends", ":friendId", handler: friendController.getFriend)
+    }
     try api.grouped(TokenMiddleware()).resource("meetup", MeetupController.self)
     try api.grouped(TokenMiddleware()).resource("invites", InviteController.self)
 	}

@@ -12,7 +12,12 @@ import HTTP
 public final class FriendController: EmptyInitializable, ResourceRepresentable {
   public init() { }
 
-  public func updateFriend(_ request: Request, friend: Friend) throws -> ResponseRepresentable {
+  public func updateFriend(_ request: Request) throws -> ResponseRepresentable {
+    guard let userId = request.parameters["userId"]?.int,
+      let friendId = request.parameters["friendId"]?.int else {
+        throw Abort.badRequest
+    }
+    
     guard friend.userId.int == request.headers["userId"]?.int else {
       throw Abort(.forbidden, reason: "You cannot edit someones friend request!")
     }
@@ -62,7 +67,16 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     return Response(status: .ok)
   }
   
-  public func getFriend(_ request: Request, friend: Friend) throws -> ResponseRepresentable {
+  public func getFriend(_ request: Request) throws -> ResponseRepresentable {
+    guard let userId = request.parameters["userId"]?.int,
+      let friendId = request.parameters["friendId"]?.int else {
+        throw Abort.badRequest
+    }
+    
+    guard let friend = try Friend.makeQuery().filter("userId", userId).and({ try $0.filter("friendId", friendId) }).first() else {
+      throw Abort.notFound
+    }
+    
     return try friend.makeJSON()
   }
   
@@ -79,10 +93,7 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
   public func makeResource() -> Resource<Friend> {
     return Resource(
       index: getAllFriends,
-      store: addFriend,
-      show: getFriend,
-      update: updateFriend,
-      destroy: removeFriend
+      store: addFriend
     )
   }
 }
