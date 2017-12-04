@@ -14,15 +14,6 @@ import BCrypt
 public final class AuthController: EmptyInitializable {
   
   public init() { }
-  
-	public func addRoutes(_ builder: RouteBuilder) {
-		let auth = builder.grouped("auth")
-		// add routes
-//    auth.post("register", handler: register)
-		auth.post("login", handler: login)
-		auth.post("verify", handler: verify)
-//    auth.post("resend", handler: resend)
-	}
 	
 	public func resend(_ request: Request) throws -> ResponseRepresentable {
 		guard let email = request.json?["email"]?.string?.lowercased() else {
