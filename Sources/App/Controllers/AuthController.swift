@@ -11,17 +11,20 @@ import JWT
 import Foundation
 import BCrypt
 
-public final class AuthController {
+public final class AuthController: EmptyInitializable {
+  
+  public init() { }
+  
 	public func addRoutes(_ builder: RouteBuilder) {
 		let auth = builder.grouped("auth")
 		// add routes
-		auth.post("register", handler: register)
+//    auth.post("register", handler: register)
 		auth.post("login", handler: login)
 		auth.post("verify", handler: verify)
-		auth.post("resend", handler: resend)
+//    auth.post("resend", handler: resend)
 	}
 	
-	public func resend(request: Request) throws -> ResponseRepresentable {
+	public func resend(_ request: Request) throws -> ResponseRepresentable {
 		guard let email = request.json?["email"]?.string?.lowercased() else {
 			throw Abort.badRequest
 		}
@@ -68,7 +71,7 @@ public final class AuthController {
 		return JSON([:])
 	}
 	
-	public func verify(request: Request) throws -> ResponseRepresentable {
+	public func verify(_ request: Request) throws -> ResponseRepresentable {
 		guard
 			let email = request.json?["email"]?.string?.lowercased(),
 			let code = request.json?["code"]?.int else {
@@ -150,7 +153,7 @@ public final class AuthController {
 	/**
 		Attempts to login for the user
 	**/
-	public func login(request: Request) throws -> ResponseRepresentable {
+	public func login(_ request: Request) throws -> ResponseRepresentable {
 		guard
 			let email = request.json?["email"]?.string?.lowercased(),
 			let password = request.json?["password"]?.string else {
