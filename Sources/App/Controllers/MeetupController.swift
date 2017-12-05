@@ -50,7 +50,7 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
 		
 		try meetup.save()
 		
-		return JSON([:])
+		return Response(status: .ok)
 	}
 	
 	// Gets all the meetups, based on you, the user
