@@ -79,20 +79,20 @@ extension User {
 		do {
 			try user.email.validated(by: EmailValidator())
 		} catch {
-			throw Abort(.conflict, metadata: "That is not a valid email address")
+			throw Abort(.conflict, reason: "That is not a valid email address")
 		}
 		
 		do {
 			try user.firstName.validated(by: OnlyAlphanumeric())
 			try user.lastName.validated(by: OnlyAlphanumeric())
 		} catch {
-			throw Abort(.conflict, metadata: "Your names must be alpha numeric only!")
+			throw Abort(.conflict, reason: "Your names must be alpha numeric only!")
 		}
 		
 		do {
 			try user.password.validated(by: Count.min(8))
 		} catch {
-			throw Abort(.conflict, metadata: "Your password must be at least a minimum length of 8")
+			throw Abort(.conflict, reason: "Your password must be at least a minimum length of 8")
 		}
 		
 		user.password = try Hash.make(message: user.password).makeString()
