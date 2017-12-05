@@ -33,7 +33,8 @@ public class EmailController {
     
     //: Generate The Email
     if let droplet = droplet {
-      let email = Email(from: serverEmail, to: user.email, subject: verifyTemplate.subject, body: try verifyTemplate.makeMessage())
+      let body = EmailBody(type: .html, content: try verifyTemplate.makeMessage())
+      let email = Email(from: serverEmail, to: user.email, subject: verifyTemplate.subject, body: body)
       try droplet.mail.send(email)
     }
 	}
@@ -48,7 +49,8 @@ public class EmailController {
 		
 		//: Generate the Email
     if let droplet = droplet {
-      let email = Email(from: serverEmail, to: user.email, subject: confirmTemplate.subject, body: try confirmTemplate.makeMessage())
+      let body = EmailBody(type: .html, content: try confirmTemplate.makeMessage())
+      let email = Email(from: serverEmail, to: user.email, subject: confirmTemplate.subject, body: body)
       try droplet.mail.send(email)
     }
 	}
@@ -64,7 +66,8 @@ public class EmailController {
     
     //: Generate the email
     if let droplet = droplet {
-      let email = Email(from: from.email, to: user.email, subject: inviteTemplate.subject, body: try inviteTemplate.makeMessage())
+      let body = EmailBody(type: .html, content: try inviteTemplate.makeMessage())
+      let email = Email(from: from.email, to: user.email, subject: inviteTemplate.subject, body: body)
       try droplet.mail.send(email)
     }
 	}
@@ -81,7 +84,8 @@ public class EmailController {
     
     //: Generate the email
     if let droplet = droplet {
-      let email = Email(from: from.email, to: user.email, subject: acceptTemplate.subject, body: try acceptTemplate.makeMessage())
+      let body = EmailBody(type: .html, content: try acceptTemplate.makeMessage())
+      let email = Email(from: from.email, to: user.email, subject: acceptTemplate.subject, body: body)
       try droplet.mail.send(email)
     }
 	}
@@ -97,7 +101,8 @@ public class EmailController {
 		
     //: Generate the email
     if let droplet = droplet {
-      let email = Email(from: from.email, to: user.email, subject: friendRequestTemplate.subject, body: try friendRequestTemplate.makeMessage())
+      let body = EmailBody(type: .html, content: try friendRequestTemplate.makeMessage())
+      let email = Email(from: from.email, to: user.email, subject: friendRequestTemplate.subject, body: body)
       try droplet.mail.send(email)
     }
 	}
@@ -113,7 +118,8 @@ public class EmailController {
 		
     //: Generate the email
     if let droplet = droplet {
-      let email = Email(from: from.email, to: user.email, subject: acceptFriendTemplate.subject, body: try acceptFriendTemplate.makeMessage())
+      let body = EmailBody(type: .html, content: try acceptFriendTemplate.makeMessage())
+      let email = Email(from: from.email, to: user.email, subject: acceptFriendTemplate.subject, body: body)
       try droplet.mail.send(email)
     }
 	}

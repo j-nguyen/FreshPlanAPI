@@ -59,7 +59,7 @@ public final class AuthController: EmptyInitializable {
 		let emailController = try EmailController(config: config)
 		try emailController.sendVerificationEmail(to: user, code: code)
 		
-		return JSON([:])
+    return Response(status: .ok)
 	}
 	
 	public func verify(_ request: Request) throws -> ResponseRepresentable {
@@ -120,7 +120,7 @@ public final class AuthController: EmptyInitializable {
 			let emailController = try EmailController(config: config)
 			try emailController.sendVerificationEmail(to: user, code: code)
 			
-			return JSON([:])
+			return Response(status: .ok)
 		}
 		
 		guard code == jwt.payload["code"]?.int else {
@@ -138,7 +138,7 @@ public final class AuthController: EmptyInitializable {
 		let emailController = try EmailController(config: config)
 		try emailController.sendConfirmationEmail(to: user)
 		
-		return JSON([:])
+		return Response(status: .ok)
 	}
 	
 	/**
@@ -214,6 +214,6 @@ public final class AuthController: EmptyInitializable {
 		let verification = Verification(userId: userId, token: tokenString)
 		try verification.save()
 		
-		return JSON([:])
+		return Response(status: .ok)
 	}
 }
