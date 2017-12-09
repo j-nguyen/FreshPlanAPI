@@ -17,7 +17,8 @@ public final class UserController: EmptyInitializable, ResourceRepresentable {
 		
 		// if a search query shows up, we can filter based on the contains
 		if let search = request.query?["search"]?.string {
-			let users = try User.makeQuery().filter("displayName", .contains, search.lowercased()).all()
+      let users = try User.makeQuery().filter("displayName", .custom("~*"), search).all()
+      
 			return try users.makeJSON()
 		}
 		
