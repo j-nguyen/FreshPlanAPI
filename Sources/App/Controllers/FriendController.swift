@@ -102,16 +102,8 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     guard let userId = request.parameters["userId"]?.int else {
       throw Abort.badRequest
     }
-    
-    let friends = try Friend.makeQuery().filter("userId", userId)
-    
-    // if a search is available, then filter based on displayname containined
-    if let search = request.query?["search"]?.string {
-      let friendsFilter = try friends.filter("displayName", .contains, search).all()
-      return try friendsFilter.makeJSON()
-    }
-    
-    return try friends.all().makeJSON()
+
+    return  try Friend.makeQuery().filter("userId", userId).all().makeJSON()
   }
   
   public func makeResource() -> Resource<Friend> {
