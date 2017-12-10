@@ -38,10 +38,34 @@ extension Friend {
   }
   
   public var friend: Parent<Friend, User> {
-    return parent(id: friendsId)
+    return parent(id: friendId)
   }
 }
 
 extension Friend: Preparation {
+  public static func prepare(_ database: Database) throws {
+    try database.create(self) { db in
+      db.id()
+      db.parent(User.self)
+      db.parent(User.self, foreignIdKey: "friendId")
+      db.raw("UNIQUE(\"userId\", \"friendId\")")
+    }
+  }
   
+  public static func revert(_ database: Database) throws {
+    try database.delete(self)
+  }
+}
+
+extension Friend: JSONConvertible {
+  public convenience init(json: JSON) throws {
+    self.init(
+      userId: try json.get("userId"),
+      friendId: try json.get("friendId")
+    )
+  }
+  
+  public func makeJSON() throws -> JSON {
+    return try friend.get()?.makeJSON() ?? JSON()
+  }
 }

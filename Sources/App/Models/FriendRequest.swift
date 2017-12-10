@@ -53,6 +53,7 @@ extension FriendRequest: Preparation {
 			friend.parent(User.self)
 			friend.parent(User.self, foreignIdKey: "requestedId")
 			friend.bool("accepted", default: false)
+      friend.raw("UNIQUE(\"requesterId\", \"requested_id\")")
 		}
 	}
 	
@@ -64,13 +65,13 @@ extension FriendRequest: Preparation {
 extension FriendRequest: JSONConvertible {
 	public convenience init(json: JSON) throws {
 		self.init(
-      userId: try json.get("requesterId"),
-      friendsId: try json.get("requestedId")
+      requesterId: try json.get("requesterId"),
+      requestedId: try json.get("requestedId")
     )
 	}
 	
 	public func makeJSON() throws -> JSON {
-		var json = try friendRequest.get()?.makeJSON()
+		var json = try requester.get()?.makeJSON()
 		try json?.set("accepted", accepted)
     return json ?? JSON()
 	}
