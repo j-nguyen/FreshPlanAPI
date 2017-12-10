@@ -31,6 +31,17 @@ public final class Friend: Model, Timestampable {
     return row
   }
 }
+
+extension Friend {
+  public var user: Parent<Friend, User> {
+    return parent(id: userId)
+  }
+  
+  public var friend: Parent<Friend, User> {
+    return parent(id: friendsId)
+  }
+}
+
 extension Friend: Preparation {
   
 }

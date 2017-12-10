@@ -9,40 +9,40 @@ import Vapor
 import FluentProvider
 
 public final class FriendRequest: Model, Timestampable {
-	public var userId: Identifier
-	public var friendsId: Identifier
+	public var requesterId: Identifier
+	public var requestedId: Identifier
 	public var accepted: Bool = false
 	
 	public let storage = Storage()
 	
-	public init(userId: Identifier, friendsId: Identifier, accepted: Bool = false) {
-		self.userId = userId
-		self.friendsId = friendsId
+	public init(requesterId: Identifier, requestedId: Identifier, accepted: Bool = false) {
+		self.requesterId = requesterId
+		self.requestedId = requestedId
 		self.accepted = accepted
 	}
 	
 	public init(row: Row) throws {
-		userId = try row.get("userId")
-		friendsId = try row.get("friendId")
+		requesterId = try row.get("requesterId")
+		requestedId = try row.get("requestedId")
 		accepted = try row.get("accepted")
 	}
 	
 	public func makeRow() throws -> Row {
 		var row = Row()
-		try row.set("userId", userId)
-		try row.set("friendId", friendsId)
+		try row.set("requesterId", requesterId)
+		try row.set("requestedId", requestedId)
 		try row.set("accepted", accepted)
 		return row
 	}
 }
 
 extension FriendRequest {
-	public var user: Parent<FriendRequest, User> {
-		return parent(id: userId)
+	public var requester: Parent<FriendRequest, User> {
+		return parent(id: requesterId)
 	}
 	
-	public var friendRequest: Parent<FriendRequest, User> {
-		return parent(id: friendsId)
+	public var requested: Parent<FriendRequest, User> {
+		return parent(id: requestedId)
 	}
 }
 
@@ -51,7 +51,7 @@ extension FriendRequest: Preparation {
 		try database.create(self) { friend in
 			friend.id()
 			friend.parent(User.self)
-			friend.parent(User.self, foreignIdKey: "friendId")
+			friend.parent(User.self, foreignIdKey: "requestedId")
 			friend.bool("accepted", default: false)
 		}
 	}
@@ -64,8 +64,8 @@ extension FriendRequest: Preparation {
 extension FriendRequest: JSONConvertible {
 	public convenience init(json: JSON) throws {
 		self.init(
-      userId: try json.get("userId"),
-      friendsId: try json.get("friendsId")
+      userId: try json.get("requesterId"),
+      friendsId: try json.get("requestedId")
     )
 	}
 	
