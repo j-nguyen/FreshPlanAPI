@@ -30,6 +30,14 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     friend.accepted = request.json?["accepted"]?.bool ?? friend.accepted
     
     if friend.accepted {
+      // we want to add two rows to make sure they've been added
+      let acceptedFriend = Friend(userId: friend.requesterId, friendId: friend.requestedId)
+      let acceptedFriendOfUser = Friend(userId: friend.requestedId, friendId: friend.requesterId)
+      
+      try acceptedFriend.save()
+      try acceptedFriendOfUser.save()
+      
+      // config
       guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
       let emailController = try EmailController(config: config)
       
@@ -74,13 +82,13 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
       throw Abort.notFound
     }
     
-    let friend = FriendRequest(userId: Identifier(userId), friendsId: Identifier(friendId))
+    let friend = FriendRequest(requesterId: Identifier(userId), requestedId: Identifier(friendId))
     try friend.save()
     
     guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
     let emailController = try EmailController(config: config)
     
-    guard let user = try friend.user.get(), let friendOfUser = try friend.friend.get() else { throw Abort.notFound }
+    guard let user = try friend.requester.get(), let friendOfUser = try friend.requested.get() else { throw Abort.notFound }
     
     try emailController.sendFriendRequestEmail(from: user, to: friendOfUser)
     
@@ -110,6 +118,7 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
   
   public func makeResource() -> Resource<FriendRequest> {
     return Resource(
+      index: getAllFriends,
       store: addFriend
     )
   }

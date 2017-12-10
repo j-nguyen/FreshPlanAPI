@@ -49,26 +49,6 @@ public final class SeedCommand: Command {
 		console.print("Added 25 users.")
 	}
 	
-	fileprivate func addFriends() throws {
-		// we will attempt to add every single friend, lol
-		for primaryId in 1...25 {
-			// we will add the !, because this is run after addUsers()
-			let user = try User.find(primaryId)!
-			for secondaryId in 1...25 {
-				let secondaryUser = try User.find(secondaryId)!
-				// attempt to add friend here
-        // it can't be the same user though.
-        if primaryId != secondaryId {
-          console.print("User: \(user.displayName) adding \(secondaryUser.displayName)")
-          let friend = Friend(userId: user.id!, friendsId: secondaryUser.id!)
-          try friend.save()
-          console.print("Friend added.")
-        }
-			}
-		}
-		console.print("Added all friends")
-	}
-	
 	fileprivate func addMeetups() throws {
 		for i in 1...5 {
 			let user = try User.find(i)!
@@ -110,7 +90,6 @@ public final class SeedCommand: Command {
 		console.print("running custom command..")
 		try addMeetupTypes()
 		try addUsers()
-		try addFriends()
 		try addMeetups()
 		try addInvites()
 	}
