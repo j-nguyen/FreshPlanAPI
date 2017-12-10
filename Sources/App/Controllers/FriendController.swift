@@ -82,6 +82,10 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
       throw Abort.notFound
     }
     
+    guard userId != friendId else {
+      throw Abort(.conflict, reason: "You can't send a friend request to yourself!")
+    }
+    
     let friend = FriendRequest(requesterId: Identifier(userId), requestedId: Identifier(friendId))
     try friend.save()
     

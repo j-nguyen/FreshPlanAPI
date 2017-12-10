@@ -50,10 +50,10 @@ extension FriendRequest: Preparation {
 	public static func prepare(_ database: Database) throws {
 		try database.create(self) { friend in
 			friend.id()
-			friend.parent(User.self)
+      friend.parent(User.self, foreignIdKey: "requesterId")
 			friend.parent(User.self, foreignIdKey: "requestedId")
 			friend.bool("accepted", default: false)
-      friend.raw("UNIQUE(\"requesterId\", \"requested_id\")")
+      friend.raw("UNIQUE(\"requesterId\", \"requestedId\")")
 		}
 	}
 	
