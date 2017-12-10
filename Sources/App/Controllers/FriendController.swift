@@ -72,7 +72,7 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
       throw Abort.notFound
     }
     
-    let friend = Friend(userId: Identifier(userId), friendsId: Identifier(friendId))
+    let friend = FriendRequest(userId: Identifier(userId), friendsId: Identifier(friendId))
     try friend.save()
     
     guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
@@ -106,9 +106,8 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     return  try Friend.makeQuery().filter("userId", userId).all().makeJSON()
   }
   
-  public func makeResource() -> Resource<Friend> {
+  public func makeResource() -> Resource<FriendRequest> {
     return Resource(
-      index: getAllFriends,
       store: addFriend
     )
   }
