@@ -33,5 +33,6 @@ extension Config {
 		preparations.append(Meetup.self)
 		preparations.append(Invitation.self)
 		preparations.append(FriendRequest.self)
+    preparations.append(Friend.self)
 	}
 }

@@ -15,5 +15,6 @@ extension Droplet {
 		Meetup.database = database
 		Invitation.database = database
 		Friend.database = database
+    FriendRequest.database = database
 	}
 }
