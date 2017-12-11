@@ -34,6 +34,7 @@ public final class V1Collection: EmptyInitializable, RouteCollection {
       friend.get("friends", ":friendId", handler: friendController.getFriend)
       friend.patch("friends", ":friendId", handler: friendController.updateFriend)
       friend.delete("friends", ":friendId", handler: friendController.removeFriend)
+      friend.get("friends", "requests", handler: friendController.getFriendRequests)
     }
     
     //: MARK - Meetup

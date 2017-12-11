@@ -73,6 +73,14 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     return Response(status: .ok)
   }
   
+  public func getFriendRequests(_ request: Request) throws -> ResponseRepresentable {
+    guard let userId = request.parameters["userId"]?.int else {
+      throw Abort.badRequest
+    }
+    
+    return try FriendRequest.makeQuery().filter("requestedId", userId).all().makeJSON()
+  }
+  
   public func addFriend(_ request: Request) throws -> ResponseRepresentable {
     guard let userId = request.headers["userId"]?.int else {
       throw Abort.badRequest
