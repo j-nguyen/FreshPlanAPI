@@ -71,9 +71,9 @@ extension HTMLTemplate {
 		
 		switch self {
 		case let .verification(user, code):
-			return String.format(file, user.firstName, user.lastName, code)
+			return String.format(file, user.displayName, code)
 		case let .confirmation(user):
-			return String.format(file, user.firstName, user.lastName)
+			return String.format(file, user.displayName)
 		case let .invite(from, to, meetup):
 			return String.format(file, to.displayName, from.displayName, meetup)
 		case let .friendRequest(from, to):
