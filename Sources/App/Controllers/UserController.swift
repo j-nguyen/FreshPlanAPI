@@ -41,8 +41,6 @@ public final class UserController: EmptyInitializable, ResourceRepresentable {
 			throw Abort(.forbidden, reason: "You can only edit your own user!")
 		}
 		
-		user.firstName = request.json?["firstName"]?.string ?? user.firstName
-		user.lastName = request.json?["lastName"]?.string ?? user.lastName
 		user.displayName = request.json?["displayName"]?.string ?? user.displayName
 		user.email = request.json?["email"]?.string ?? user.email
 		
