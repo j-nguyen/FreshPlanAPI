@@ -35,8 +35,6 @@ public final class SeedCommand: Command {
 	fileprivate func addUsers() throws {
 		for i in 1...25 {
 			let user = try User(
-				firstName: "Fake\(i)",
-				lastName: "User\(i)",
 				displayName: "fakeuser\(i)",
 				email: "fakeuser\(i)@example.com",
 				password: "test1234"

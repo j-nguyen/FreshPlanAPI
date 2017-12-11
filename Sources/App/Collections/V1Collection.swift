@@ -15,7 +15,7 @@ public final class V1Collection: EmptyInitializable, RouteCollection {
 		// gets the versioning for future release
 		let api = builder.grouped("api", "v1")
 		
-    //: MARK - Authentication
+    //MARK: - Authentication
     let authController = AuthController()
     api.group("auth") { auth in
       auth.post("register", handler: authController.register)
@@ -24,10 +24,10 @@ public final class V1Collection: EmptyInitializable, RouteCollection {
       auth.post("resend", handler: authController.resend)
     }
     
-    //: MARK - Users
+    //MARK: - Users
     try api.grouped(TokenMiddleware()).resource("users", UserController.self)
     
-    //: MARK - Friends
+    //MARK: - Friends
     let friendController = FriendController()
     api.grouped(TokenMiddleware()).group("users", ":userId") { friend in
       friend.resource("friends", friendController)
@@ -36,10 +36,10 @@ public final class V1Collection: EmptyInitializable, RouteCollection {
       friend.delete("friends", ":friendId", handler: friendController.removeFriend)
     }
     
-    //: MARK - Meetup
+    //MARK: - Meetup
     try api.grouped(TokenMiddleware()).resource("meetup", MeetupController.self)
    
-    //: MARK - Invites
+    //MARK: - Invites
     try api.grouped(TokenMiddleware()).resource("invites", InviteController.self)
 	}
 }
