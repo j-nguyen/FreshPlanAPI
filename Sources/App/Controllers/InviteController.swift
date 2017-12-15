@@ -51,15 +51,24 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
 	}
 	
 	// get inv by id
-  public func getInvite(_ request: Request, invite: Invitation) throws -> ResponseRepresentable {
+    public func getInvite(_ request: Request, invite: Invitation) throws -> ResponseRepresentable {
+        guard let userId = request.headers["userId"]?.int else { throw Abort.badRequest }
+        guard let invite = try invite.makeQuery().filter("userId", userId).first() else {
+           throw Abort.notFound
+        }
 		return try invite.makeJSON()
 	}
 	
 	// update
-  public func updateInvite(_ request: Request, invite: Invitation) throws -> ResponseRepresentable {
-		
-    invite.accepted = request.json?["accepted"]?.bool ?? invite.accepted
-		try invite.save()
+    public func updateInvite(_ request: Request, invite: Invitation) throws -> ResponseRepresentable {
+        
+        guard let userId = request.headers["userId"]?.int, userId == invite.userId.int else {
+            throw Abort(.conflict, reason: "You can't change another users invitation")
+            
+        }
+        
+        invite.accepted = request.json?["accepted"]?.bool ?? invite.accepted
+        try invite.save()
     
 		if invite.accepted {
 			guard let user = try invite.user.get() else { throw Abort.notFound }
