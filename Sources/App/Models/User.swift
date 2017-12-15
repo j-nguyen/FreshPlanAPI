@@ -25,7 +25,7 @@ public final class User: Model, Timestampable {
 	public init(firstName: String, lastName: String, displayName: String, email: String, password: String, verified: Bool = false) throws {
 		self.firstName = firstName
 		self.lastName = lastName
-    self.displayName = displayName
+        self.displayName = displayName
 		self.email = email
 		self.password = password
 		self.profileURL = try firstName.generatePlaceholder()
