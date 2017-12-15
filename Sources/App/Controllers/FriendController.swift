@@ -14,25 +14,34 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
 
   public func updateFriend(_ request: Request) throws -> ResponseRepresentable {
     guard let userId = request.parameters["userId"]?.int,
-      let friendId = request.parameters["friendId"]?.int else {
+          let requesterId = request.parameters["friendId"]?.int else {
         throw Abort.badRequest
     }
   
-    guard let friend = try Friend.makeQuery().filter("friendId", friendId).first() else {
+    guard let friend = try FriendRequest.makeQuery().filter("requestedId", userId)
+      .and({ try $0.filter("requesterId", requesterId) }).first() else {
       throw Abort.notFound
     }
     
-    guard userId == request.headers["userId"]?.int && friend.userId.int == userId else {
+    guard userId == request.headers["userId"]?.int && friend.requestedId.int == userId else {
       throw Abort(.forbidden, reason: "You cannot edit someones friend request!")
     }
     
     friend.accepted = request.json?["accepted"]?.bool ?? friend.accepted
     
     if friend.accepted {
+      // we want to add two rows to make sure they've been added
+      let acceptedFriend = Friend(userId: friend.requesterId, friendId: friend.requestedId)
+      let acceptedFriendOfUser = Friend(userId: friend.requestedId, friendId: friend.requesterId)
+      
+      try acceptedFriend.save()
+      try acceptedFriendOfUser.save()
+      
+      // config
       guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
       let emailController = try EmailController(config: config)
       
-      guard let user = try friend.user.get(), let friendOfUser = try friend.friend.get() else {
+      guard let user = try friend.requester.get(), let friendOfUser = try friend.requested.get() else {
         throw Abort.notFound
       }
       
@@ -46,21 +55,45 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
   
   public func removeFriend(_ request: Request) throws -> ResponseRepresentable {
     guard let userId = request.parameters["userId"]?.int,
-      let friendId = request.parameters["friendId"]?.int else {
+          let requesterId = request.parameters["requesterId"]?.int  else {
         throw Abort.badRequest
     }
   
-    guard let friend = try Friend.makeQuery().filter("friendId", friendId).first() else {
-      throw Abort.notFound
+    guard let friend = try FriendRequest.makeQuery().filter("requestedId", userId)
+      .and({ try $0.filter("requesterId", requesterId) }).first() else {
+        throw Abort.notFound
     }
     
-    guard userId == request.headers["userId"]?.int && friend.userId.int == userId else {
+    guard userId == request.headers["userId"]?.int && friend.requestedId.int == userId else {
       throw Abort(.forbidden, reason: "You cannot edit someones friend request!")
     }
     
     try friend.delete()
     
     return Response(status: .ok)
+  }
+  
+  public func getFriendRequests(_ request: Request) throws -> ResponseRepresentable {
+    guard let userId = request.parameters["userId"]?.int else {
+      throw Abort.badRequest
+    }
+    
+    return try FriendRequest.makeQuery().filter("requestedId", userId).all().makeJSON()
+  }
+  
+  public func getFriendRequest(_ request: Request) throws -> ResponseRepresentable {
+    guard
+      let userId = request.parameters["userId"]?.int,
+      let friendId = request.parameters["friendId"]?.int else {
+        throw Abort.badRequest
+    }
+    
+    guard let friendRequest = try FriendRequest.makeQuery().filter("requestedId", userId)
+      .and({ try $0.filter("requesterId", friendId) }).first() else {
+        throw Abort.notFound
+    }
+    
+    return try friendRequest.makeJSON()
   }
   
   public func addFriend(_ request: Request) throws -> ResponseRepresentable {
@@ -72,13 +105,17 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
       throw Abort.notFound
     }
     
-    let friend = Friend(userId: Identifier(userId), friendsId: Identifier(friendId))
+    guard userId != friendId else {
+      throw Abort(.conflict, reason: "You can't send a friend request to yourself!")
+    }
+    
+    let friend = FriendRequest(requesterId: Identifier(userId), requestedId: Identifier(friendId))
     try friend.save()
     
     guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
     let emailController = try EmailController(config: config)
     
-    guard let user = try friend.user.get(), let friendOfUser = try friend.friend.get() else { throw Abort.notFound }
+    guard let user = try friend.requester.get(), let friendOfUser = try friend.requested.get() else { throw Abort.notFound }
     
     try emailController.sendFriendRequestEmail(from: user, to: friendOfUser)
     
@@ -98,17 +135,15 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     return try friend.makeJSON()
   }
   
-  public func getAllFriends(request: Request) throws -> ResponseRepresentable {
+  public func getAllFriends(_ request: Request) throws -> ResponseRepresentable {
     guard let userId = request.parameters["userId"]?.int else {
       throw Abort.badRequest
     }
-    
-    let friends = try Friend.makeQuery().filter("userId", userId).all()
-    
-    return try friends.makeJSON()
+
+    return  try Friend.makeQuery().filter("userId", userId).all().makeJSON()
   }
   
-  public func makeResource() -> Resource<Friend> {
+  public func makeResource() -> Resource<FriendRequest> {
     return Resource(
       index: getAllFriends,
       store: addFriend

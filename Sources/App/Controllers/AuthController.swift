@@ -11,17 +11,11 @@ import JWT
 import Foundation
 import BCrypt
 
-public final class AuthController {
-	public func addRoutes(_ builder: RouteBuilder) {
-		let auth = builder.grouped("auth")
-		// add routes
-		auth.post("register", handler: register)
-		auth.post("login", handler: login)
-		auth.post("verify", handler: verify)
-		auth.post("resend", handler: resend)
-	}
+public final class AuthController: EmptyInitializable {
+  
+  public init() { }
 	
-	public func resend(request: Request) throws -> ResponseRepresentable {
+	public func resend(_ request: Request) throws -> ResponseRepresentable {
 		guard let email = request.json?["email"]?.string?.lowercased() else {
 			throw Abort.badRequest
 		}
@@ -65,10 +59,10 @@ public final class AuthController {
 		let emailController = try EmailController(config: config)
 		try emailController.sendVerificationEmail(to: user, code: code)
 		
-		return JSON([:])
+    return Response(status: .ok)
 	}
 	
-	public func verify(request: Request) throws -> ResponseRepresentable {
+	public func verify(_ request: Request) throws -> ResponseRepresentable {
 		guard
 			let email = request.json?["email"]?.string?.lowercased(),
 			let code = request.json?["code"]?.int else {
@@ -126,7 +120,7 @@ public final class AuthController {
 			let emailController = try EmailController(config: config)
 			try emailController.sendVerificationEmail(to: user, code: code)
 			
-			return JSON([:])
+			return Response(status: .ok)
 		}
 		
 		guard code == jwt.payload["code"]?.int else {
@@ -144,13 +138,13 @@ public final class AuthController {
 		let emailController = try EmailController(config: config)
 		try emailController.sendConfirmationEmail(to: user)
 		
-		return JSON([:])
+		return Response(status: .ok)
 	}
 	
 	/**
 		Attempts to login for the user
 	**/
-	public func login(request: Request) throws -> ResponseRepresentable {
+	public func login(_ request: Request) throws -> ResponseRepresentable {
 		guard
 			let email = request.json?["email"]?.string?.lowercased(),
 			let password = request.json?["password"]?.string else {
@@ -220,6 +214,6 @@ public final class AuthController {
 		let verification = Verification(userId: userId, token: tokenString)
 		try verification.save()
 		
-		return JSON([:])
+		return Response(status: .ok)
 	}
 }

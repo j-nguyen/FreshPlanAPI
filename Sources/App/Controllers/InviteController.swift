@@ -40,7 +40,7 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
 		let emailController = try EmailController(config: config)
 		try emailController.sendInvitationEmail(from: user, to: invitee, meetup: meetup.title)
 		
-		return JSON([:])
+		return Response(status: .ok)
 	}
 	
 	// get all inv
