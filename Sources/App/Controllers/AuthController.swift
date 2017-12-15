@@ -120,7 +120,7 @@ public final class AuthController: EmptyInitializable {
 			let emailController = try EmailController(config: config)
 			try emailController.sendVerificationEmail(to: user, code: code)
 			
-			return Response(status: .ok)
+      return Response(status: .created)
 		}
 		
 		guard code == jwt.payload["code"]?.int else {
