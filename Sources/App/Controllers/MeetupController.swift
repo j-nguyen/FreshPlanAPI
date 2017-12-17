@@ -63,7 +63,8 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     var meetups = try Meetup.makeQuery().filter("userId", userId).all()
     
     // gets all the meetups from invited
-    let invitedMeetups = try Invitation.makeQuery().filter("inviteeId", userId).all().map { invited in
+    let invitedMeetups = try Invitation.makeQuery().filter("inviteeId", userId)
+      .and({ try $0.filter("accepted", true) }).all().map { invited in
       return try invited.meetup.get()
     }.flatMap { $0 }
     

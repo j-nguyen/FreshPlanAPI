@@ -27,8 +27,17 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
     
     guard let meetup = try Meetup.find(meetupId) else { throw Abort.notFound }
     
-    guard meetup.userId.int == inviterId else {
-      throw Abort(.forbidden, reason: "Only the host can invite users!")
+    let invitations = try meetup.invitations.makeQuery()
+      .filter("inviteeId", inviterId)
+      .and({ try $0.filter("accepted", true) })
+      .first()
+    
+    guard meetup.userId.int == inviterId || invitations != nil else {
+      throw Abort(.forbidden, reason: "Only people who are invited to the meetup can invite other users!")
+    }
+    
+    guard inviterId != inviteeId else {
+      throw Abort(.conflict, reason: "You can't invite yourself")
     }
     
     // create invitation
