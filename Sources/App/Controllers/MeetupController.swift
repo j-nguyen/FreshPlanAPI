@@ -60,7 +60,14 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     }
     
     // once we get userId, we'll find all the ties between meetup
-    let meetups = try Meetup.makeQuery().filter("userId", userId).all()
+    var meetups = try Meetup.makeQuery().filter("userId", userId).all()
+    
+    // gets all the meetups from invited
+    let invitedMeetups = try Invitation.makeQuery().filter("inviteeId", userId).all().map { invited in
+      return try invited.meetup.get()
+    }.flatMap { $0 }
+    
+    meetups.append(contentsOf: invitedMeetups)
     
     return try meetups.makeJSON()
   }
