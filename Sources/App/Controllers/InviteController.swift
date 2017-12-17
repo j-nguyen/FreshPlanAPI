@@ -31,6 +31,10 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
       throw Abort(.forbidden, reason: "Only the host can invite users!")
     }
     
+    guard inviterId != inviteeId else {
+      throw Abort(.conflict, reason: "You can't invite yourself")
+    }
+    
     // create invitation
     let invite = Invitation(inviterId: Identifier(inviterId), inviteeId: Identifier(inviteeId), meetupId: Identifier(meetupId))
     try invite.save()
