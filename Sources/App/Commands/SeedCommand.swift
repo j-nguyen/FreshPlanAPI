@@ -46,6 +46,18 @@ public final class SeedCommand: Command {
 		}
 		console.print("Added 25 users.")
 	}
+    
+    fileprivate func addInvites() throws {
+        let user = try User.all()
+        let meetup = try Meetup.all()
+        try meetup.forEach { meetup in
+            try user.forEach { user in
+                let invite = Invitation(inviterId: meetup.userId, inviteeId: user.id!, meetupId: meetup.id!)
+                try invite.save()
+                console.print("add user \(user.displayName)")
+            }
+        }
+    }
 	
 	fileprivate func addMeetups() throws {
 		for i in 1...5 {
