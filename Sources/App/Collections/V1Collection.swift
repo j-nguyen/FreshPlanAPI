@@ -39,7 +39,7 @@ public final class V1Collection: EmptyInitializable, RouteCollection {
     }
     
     //MARK: - Meetup
-    try api.grouped(TokenMiddleware()).resource("meetup", MeetupController.self)
+    try api.grouped(TokenMiddleware()).resource("meetups", MeetupController.self)
    
     //MARK: - Invites
     try api.grouped(TokenMiddleware()).resource("invites", InviteController.self)
