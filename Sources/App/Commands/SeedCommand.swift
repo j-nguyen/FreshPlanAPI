@@ -33,7 +33,7 @@ public final class SeedCommand: Command {
 	}
 	
 	fileprivate func addUsers() throws {
-		for i in 1...25 {
+		for i in 1...10 {
 			let user = try User(
 				displayName: "fakeuser\(i)",
 				email: "fakeuser\(i)@example.com",
@@ -44,8 +44,20 @@ public final class SeedCommand: Command {
 			try User.register(user: user)
 			console.print("User added.")
 		}
-		console.print("Added 25 users.")
+		console.print("Added 10 users.")
 	}
+    
+  fileprivate func addInvites() throws {
+    let user = try User.all()
+    let meetup = try Meetup.all()
+    try meetup.forEach { meetup in
+      try user.forEach { user in
+        let invite = Invitation(inviterId: meetup.userId, inviteeId: user.id!, meetupId: meetup.id!)
+        try invite.save()
+        console.print("add user \(user.displayName)")
+      }
+    }
+  }
 	
 	fileprivate func addMeetups() throws {
 		for i in 1...5 {
@@ -70,26 +82,12 @@ public final class SeedCommand: Command {
 		console.print("Meetup saved")
 	}
 	
-	fileprivate func addInvites() throws {
-		for i in 1...5 {
-			let user = try User.find(i)!
-			for j in 1...10 {
-				let meetup = try Meetup.find(j)!
-				// attempt to get an invite here
-				let invite = Invitation(userId: user.id!, meetupId: meetup.id!)
-				console.print("Attempt to add invite: \(try invite.meetup.get()!.title)")
-				try invite.save()
-				console.print("Invitation saved")
-			}
-		}
-	}
-	
 	public func run(arguments: [String]) throws {
 		console.print("running custom command..")
 		try addMeetupTypes()
 		try addUsers()
 		try addMeetups()
-		try addInvites()
+    try addInvites()
 	}
 }
 
