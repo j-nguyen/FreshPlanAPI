@@ -55,14 +55,14 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
   // get all inv
   public func getAllInvites(_ request: Request) throws -> ResponseRepresentable {
     guard let userId = request.headers["userId"]?.int else { throw Abort.badRequest }
-    let invite = try Invitation.makeQuery().filter("userId", userId).all()
+    let invite = try Invitation.makeQuery().filter("inviteeId", userId).all()
     return try invite.makeJSON()
   }
   
   // get inv by id
   public func getInvite(_ request: Request, invite: Invitation) throws -> ResponseRepresentable {
     guard let userId = request.headers["userId"]?.int else { throw Abort.badRequest }
-    guard let invite = try invite.makeQuery().filter("userId", userId).first() else {
+    guard let invite = try invite.makeQuery().filter("inviteeId", userId).first() else {
       throw Abort.notFound
     }
     return try invite.makeJSON()

@@ -23,7 +23,7 @@ public final class Invitation: Model, Timestampable {
 	}
 	
 	public init(row: Row) throws {
-    inviterId = try row.get("inviteerId")
+    inviterId = try row.get("inviterId")
 		inviteeId = try row.get("inviteeId")
 		meetupId = try row.get("meetupId")
 		accepted = try row.get("accepted")
@@ -57,7 +57,7 @@ extension Invitation: Preparation {
 	public static func prepare(_ database: Database) throws {
 		try database.create(self) { invitation in
 			invitation.id()
-      invitation.parent(User.self, foreignIdKey: "inviteerId")
+      invitation.parent(User.self, foreignIdKey: "inviterId")
       invitation.parent(User.self, foreignIdKey: "inviteeId")
 			invitation.parent(Meetup.self)
 			invitation.bool("accepted", default: false)
@@ -81,7 +81,7 @@ extension Invitation: JSONConvertible {
 	public func makeJSON() throws -> JSON {
 		var json = JSON()
 		try json.set("id", id)
-		try json.set("meetup", meetup.get()?.makeJSON())
+    try json.set("meetupId", meetupId)
     try json.set("inviter", inviter.get()?.makeJSON())
     try json.set("invitee", invitee.get()?.makeJSON())
 		try json.set("accepted", accepted)

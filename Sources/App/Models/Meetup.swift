@@ -118,7 +118,7 @@ extension Meetup: JSONConvertible {
 		try json.set("title", title)
 		try json.set("startDate", startDate)
 		try json.set("endDate", endDate)
-		try json.set("invitations", invitations.all().makeJSON())
+    try json.set("invitations", invitations.all().makeJSON())
 		try json.set("metadata", metadata)
 		return json
 	}

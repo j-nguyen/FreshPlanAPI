@@ -33,7 +33,7 @@ public final class SeedCommand: Command {
 	}
 	
 	fileprivate func addUsers() throws {
-		for i in 1...25 {
+		for i in 1...10 {
 			let user = try User(
 				displayName: "fakeuser\(i)",
 				email: "fakeuser\(i)@example.com",
@@ -44,20 +44,20 @@ public final class SeedCommand: Command {
 			try User.register(user: user)
 			console.print("User added.")
 		}
-		console.print("Added 25 users.")
+		console.print("Added 10 users.")
 	}
     
-    fileprivate func addInvites() throws {
-        let user = try User.all()
-        let meetup = try Meetup.all()
-        try meetup.forEach { meetup in
-            try user.forEach { user in
-                let invite = Invitation(inviterId: meetup.userId, inviteeId: user.id!, meetupId: meetup.id!)
-                try invite.save()
-                console.print("add user \(user.displayName)")
-            }
-        }
+  fileprivate func addInvites() throws {
+    let user = try User.all()
+    let meetup = try Meetup.all()
+    try meetup.forEach { meetup in
+      try user.forEach { user in
+        let invite = Invitation(inviterId: meetup.userId, inviteeId: user.id!, meetupId: meetup.id!)
+        try invite.save()
+        console.print("add user \(user.displayName)")
+      }
     }
+  }
 	
 	fileprivate func addMeetups() throws {
 		for i in 1...5 {
@@ -87,6 +87,7 @@ public final class SeedCommand: Command {
 		try addMeetupTypes()
 		try addUsers()
 		try addMeetups()
+    try addInvites()
 	}
 }
 

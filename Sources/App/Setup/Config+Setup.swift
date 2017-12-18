@@ -15,6 +15,7 @@ extension Config {
 	
 	private func setupConfigurable() {
 		addConfigurable(command: SeedCommand.init, name: "seed")
+    addConfigurable(command: DropCommand.init, name: "drop")
 	}
 	
 	/// Configure providers
