@@ -5,6 +5,7 @@
 //  Created by Johnny Nguyen on 2017-10-07.
 //
 
+import Foundation
 import Vapor
 import Console
 
@@ -83,7 +84,7 @@ public final class SeedCommand: Command {
     users.forEach { user in
       let code: Int
       #if os(Linux)
-        code = Int(random()) + 1
+        code = Int(random())
       #else
         code = Int(arc4random_uniform(1))
       #endif
