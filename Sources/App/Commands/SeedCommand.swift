@@ -70,9 +70,9 @@ public final class SeedCommand: Command {
     
     // create location
     var locationJSON = JSON()
-    try locationJSON.set("title", "random title")
     try locationJSON.set("latitude", 24.2352351)
     try locationJSON.set("longitude", 23.126343)
+    try locationJSON.set("description", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc.")
     let locationJSONString = try locationJSON.serialize().makeString()
     
     // create other
