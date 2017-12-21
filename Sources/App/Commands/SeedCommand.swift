@@ -52,7 +52,7 @@ public final class SeedCommand: Command {
     let user = try User.all()
     let meetup = try Meetup.all()
     try meetup.forEach { meetup in
-      try user.forEach { user in
+      user.forEach { user in
         if meetup.userId != user.id {
           let invite = Invitation(inviterId: meetup.userId, inviteeId: user.id!, meetupId: meetup.id!)
           try? invite.save()
@@ -82,12 +82,7 @@ public final class SeedCommand: Command {
     let otherJSONString = try otherJSON.serialize().makeString()
     
     users.forEach { user in
-      let code: Int
-      #if os(Linux)
-        code = Int(random())
-      #else
-        code = Int(arc4random_uniform(1))
-      #endif
+      let code = getRandomNum(0, 1)
       
       let meetup = Meetup(
         meetupTypeId: meetupTypes[code].id!,
@@ -101,6 +96,14 @@ public final class SeedCommand: Command {
       console.print("Saved meetup: \(meetup.title)")
     }
 	}
+  
+  fileprivate func getRandomNum(_ min: Int, _ max: Int) -> Int {
+    #if os(Linux)
+      return Int(random() % max) + min
+    #else
+      return Int(arc4random_uniform(UInt32(max)) + UInt32(min))
+    #endif
+  }
 	
 	public func run(arguments: [String]) throws {
 		console.print("running custom command..")
