@@ -66,7 +66,7 @@ public final class SeedCommand: Command {
     guard let currentUser = try User.find(1) else { return }
     let meetupTypes = try MeetupType.all()
     let users = try User.makeQuery().filter("id", .notEquals, currentUser.id).all()
-    let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc."
+    let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc."
     let currentDate = Date()
     
     // create location
@@ -77,7 +77,7 @@ public final class SeedCommand: Command {
     
     // create other
     var otherJSON = JSON()
-    try otherJSON.set("title", "random title suited")
+    try otherJSON.set("notes", "Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc.")
     let otherJSONString = try otherJSON.serialize().makeString()
     
     users.forEach { user in
