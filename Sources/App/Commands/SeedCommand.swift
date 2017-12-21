@@ -54,7 +54,7 @@ public final class SeedCommand: Command {
       try user.forEach { user in
         if meetup.userId != user.id {
           let invite = Invitation(inviterId: meetup.userId, inviteeId: user.id!, meetupId: meetup.id!)
-          try invite.save()
+          try? invite.save()
           console.print("add user \(user.displayName)")
         }
       }
