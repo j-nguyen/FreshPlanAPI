@@ -81,25 +81,23 @@ public final class SeedCommand: Command {
     let otherJSONString = try otherJSON.serialize().makeString()
     
     users.forEach { user in
-      meetupTypes.forEach { meetupType in
-        let code: Int
-        #if os(Linux)
-          code = Int(random()) + 1
-        #else
-          code = Int(arc4random_uniform(1))
-        #endif
-        
-        let meetup = Meetup(
-          meetupTypeId: meetupType.id!,
-          userId: currentUser.id!,
-          title: "Meetup-\(meetupType.type)-\(user.id!.int!)",
-          startDate: currentDate,
-          endDate: currentDate.addingTimeInterval(15241),
-          metadata: (code == 1) ? locationJSONString : otherJSONString
-        )
-        try? meetup.save()
-        console.print("Saved meetup: \(meetup.title)")
-      }
+      let code: Int
+      #if os(Linux)
+        code = Int(random()) + 1
+      #else
+        code = Int(arc4random_uniform(1))
+      #endif
+      
+      let meetup = Meetup(
+        meetupTypeId: meetupTypes[code].id!,
+        userId: currentUser.id!,
+        title: "Meetup-\(meetupTypes[code].type)-\(user.id!.int!)",
+        startDate: currentDate,
+        endDate: currentDate.addingTimeInterval(15241),
+        metadata: (code == 1) ? locationJSONString : otherJSONString
+      )
+      try? meetup.save()
+      console.print("Saved meetup: \(meetup.title)")
     }
 	}
 	
