@@ -24,6 +24,7 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     
     guard
       let title = request.json?["title"]?.string,
+      let description = request.json?["description"]?.string,
       let metadata = request.json?["metadata"]?.string else {
         
         throw Abort(.unprocessableEntity, reason: "Missing Fields!")
@@ -43,6 +44,7 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
       meetupTypeId: try meetType.id(),
       userId: Identifier(userId),
       title: title,
+      description: description,
       startDate: startDate,
       endDate: endDate,
       metadata: metadata
@@ -96,6 +98,7 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     }
     
     meetup.title = request.json?["title"]?.string ?? meetup.title
+    meetup.description = request.json?["description"]?.string ?? meetup.description
     meetup.startDate = request.json?["startDate"]?.date ?? meetup.startDate
     meetup.endDate = request.json?["endDate"]?.date ?? meetup.endDate
     meetup.metadata = request.json?["metadata"]?.string ?? meetup.metadata

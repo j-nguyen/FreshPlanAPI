@@ -66,19 +66,18 @@ public final class SeedCommand: Command {
     guard let currentUser = try User.find(1) else { return }
     let meetupTypes = try MeetupType.all()
     let users = try User.makeQuery().filter("id", .notEquals, currentUser.id).all()
+    let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc."
     let currentDate = Date()
     
     // create location
     var locationJSON = JSON()
     try locationJSON.set("latitude", 24.2352351)
     try locationJSON.set("longitude", 23.126343)
-    try locationJSON.set("description", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc.")
     let locationJSONString = try locationJSON.serialize().makeString()
     
     // create other
     var otherJSON = JSON()
     try otherJSON.set("title", "random title suited")
-    try otherJSON.set("description", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc.")
     let otherJSONString = try otherJSON.serialize().makeString()
     
     users.forEach { user in
@@ -88,6 +87,7 @@ public final class SeedCommand: Command {
         meetupTypeId: meetupTypes[code].id!,
         userId: currentUser.id!,
         title: "Meetup-\(meetupTypes[code].type)-\(user.id!.int!)",
+        description: description,
         startDate: currentDate,
         endDate: currentDate.addingTimeInterval(15241),
         metadata: (meetupTypes[code].type == "location") ? locationJSONString : otherJSONString

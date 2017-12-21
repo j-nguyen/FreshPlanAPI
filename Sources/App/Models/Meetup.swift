@@ -13,16 +13,18 @@ public final class Meetup: Model, Timestampable {
 	public var meetupTypeId: Identifier
 	public var userId: Identifier
 	public var title: String
+  public var description: String
 	public var startDate: Date
 	public var endDate: Date
 	public var metadata: String
 	
 	public let storage = Storage()
 	
-	public init(meetupTypeId: Identifier, userId: Identifier, title: String, startDate: Date, endDate: Date, metadata: String) {
+  public init(meetupTypeId: Identifier, userId: Identifier, title: String, description: String, startDate: Date, endDate: Date, metadata: String) {
 		self.meetupTypeId = meetupTypeId
 		self.userId = userId
 		self.title = title
+    self.description = description
 		self.startDate = startDate
 		self.endDate = endDate
 		self.metadata = metadata
@@ -32,6 +34,7 @@ public final class Meetup: Model, Timestampable {
 		meetupTypeId = try row.get("meetupTypeId")
 		userId = try row.get("userId")
 		title = try row.get("title")
+    description = try row.get("description")
 		startDate = try row.get("startDate")
 		endDate = try row.get("endDate")
 		metadata = try row.get("metadata")
@@ -42,6 +45,7 @@ public final class Meetup: Model, Timestampable {
 		try row.set("meetupTypeId", meetupTypeId)
 		try row.set("userId", userId)
 		try row.set("title", title)
+    try row.set("description", description)
 		try row.set("startDate", startDate)
 		try row.set("endDate", endDate)
 		try row.set("metadata", metadata)
@@ -86,6 +90,7 @@ extension Meetup: Preparation {
 			meetup.parent(MeetupType.self)
 			meetup.parent(User.self)
 			meetup.string("title")
+      meetup.custom("description", type: "TEXT")
 			meetup.date("startDate")
 			meetup.date("endDate")
 			meetup.custom("metadata", type: "TEXT")
@@ -104,6 +109,7 @@ extension Meetup: JSONConvertible {
 			meetupTypeId: try json.get("meetupTypeId"),
 			userId: try json.get("userId"),
 			title: try json.get("title"),
+      description: try json.get("description"),
 			startDate: try json.get("startDate"),
 			endDate: try json.get("endDate"),
 			metadata: try json.get("metadata")
@@ -116,6 +122,7 @@ extension Meetup: JSONConvertible {
 		try json.set("meetupType", meetupType.get()?.makeJSON())
 		try json.set("user", user.get()?.makeJSON())
 		try json.set("title", title)
+    try json.set("description", description)
 		try json.set("startDate", startDate)
 		try json.set("endDate", endDate)
     try json.set("invitations", invitations.all().makeJSON())
