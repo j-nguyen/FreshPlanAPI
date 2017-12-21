@@ -60,26 +60,45 @@ public final class SeedCommand: Command {
   }
 	
 	fileprivate func addMeetups() throws {
-		for i in 1...5 {
-			let user = try User.find(i)!
-			for j in 1...2 {
-				for k in 1...5 {
-					let currentDate = Date()
-					let meetup = Meetup(
-						meetupTypeId: Identifier(j),
-						userId: user.id!,
-						title: "Meetup\(i)\(j)\(k)",
-						startDate: currentDate,
-						endDate: currentDate.addingTimeInterval(10293), // we'll add some random date
-						metadata: ""
-					)
-					console.print("Attempting to add meetup: \(meetup.title)")
-					try meetup.save()
-					console.print("Meetup saved")
-				}
-			}
-		}
-		console.print("Meetup saved")
+    guard let currentUser = try User.find(1) else { return }
+    let meetupTypes = try MeetupType.all()
+    let users = try User.makeQuery().filter("id", .notEquals, currentUser.id).all()
+    let currentDate = Date()
+    
+    // create location
+    var locationJSON = JSON()
+    try locationJSON.set("title", "random title")
+    try locationJSON.set("latitude", 24.2352351)
+    try locationJSON.set("longitude", 23.126343)
+    let locationJSONString = try locationJSON.serialize().makeString()
+    
+    // create other
+    var otherJSON = JSON()
+    try otherJSON.set("title", "random title suited")
+    try otherJSON.set("description", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc.")
+    let otherJSONString = try otherJSON.serialize().makeString()
+    
+    try users.forEach { user in
+      meetupTypes.forEach { meetupType in
+        let code: Int
+        #if os(Linux)
+          code = Int(random()) + 1
+        #else
+          code = Int(arc4random_uniform(1))
+        #endif
+        
+        let meetup = Meetup(
+          meetupTypeId: meetupType.id!,
+          userId: currentUser.id!,
+          title: "Meetup-\(meetupType.type)-\(user.id!.int!)",
+          startDate: currentDate,
+          endDate: currentDate.addingTimeInterval(15241),
+          metadata: (code == 1) ? locationJSONString : otherJSONString
+        )
+        try? meetup.save()
+        console.print("Saved meetup: \(meetup.title)")
+      }
+    }
 	}
 	
 	public func run(arguments: [String]) throws {
