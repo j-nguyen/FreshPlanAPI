@@ -90,7 +90,7 @@ public final class SeedCommand: Command {
         title: "Meetup-\(meetupTypes[code].type)-\(user.id!.int!)",
         startDate: currentDate,
         endDate: currentDate.addingTimeInterval(15241),
-        metadata: (code == 1) ? locationJSONString : otherJSONString
+        metadata: (meetupTypes[code].type == "location") ? locationJSONString : otherJSONString
       )
       try? meetup.save()
       console.print("Saved meetup: \(meetup.title)")
