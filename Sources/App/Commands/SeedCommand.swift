@@ -52,9 +52,11 @@ public final class SeedCommand: Command {
     let meetup = try Meetup.all()
     try meetup.forEach { meetup in
       try user.forEach { user in
-        let invite = Invitation(inviterId: meetup.userId, inviteeId: user.id!, meetupId: meetup.id!)
-        try invite.save()
-        console.print("add user \(user.displayName)")
+        if meetup.userId != user.id {
+          let invite = Invitation(inviterId: meetup.userId, inviteeId: user.id!, meetupId: meetup.id!)
+          try invite.save()
+          console.print("add user \(user.displayName)")
+        }
       }
     }
   }
@@ -78,7 +80,7 @@ public final class SeedCommand: Command {
     try otherJSON.set("description", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc.")
     let otherJSONString = try otherJSON.serialize().makeString()
     
-    try users.forEach { user in
+    users.forEach { user in
       meetupTypes.forEach { meetupType in
         let code: Int
         #if os(Linux)
