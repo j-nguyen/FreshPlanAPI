@@ -50,12 +50,12 @@ public final class SeedCommand: Command {
   
   fileprivate func addFriends() throws {
     let users = try User.all()
-    for i in 0...users.count {
-      for j in stride(from: users.count, to: users.count / 2, by: -1) {
-        let friend = Friend(userId: users[i].id!, friendId: users[j].id!)
-        try? friend.save()
-        console.print("Friend Saved!")
-      }
+    var j = users.count - 1
+    for i in 0...users.count / 2 {
+      let friend = Friend(userId: users[i].id!, friendId: users[j].id!)
+      try? friend.save()
+      j -= 1
+      console.print("Friend Saved!")
     }
   }
     
