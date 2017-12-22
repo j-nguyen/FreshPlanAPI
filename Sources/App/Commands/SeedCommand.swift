@@ -47,17 +47,27 @@ public final class SeedCommand: Command {
 		}
 		console.print("Added 10 users.")
 	}
+  
+  fileprivate func addFriends() throws {
+    let users = try User.all()
+    for i in 0...users.count {
+      for j in stride(from: users.count, to: users.count / 2, by: -1) {
+        let friend = Friend(userId: users[i].id!, friendId: users[j].id!)
+        try? friend.save()
+        console.print("Friend Saved!")
+      }
+    }
+  }
     
   fileprivate func addInvites() throws {
-    let user = try User.all()
-    let meetup = try Meetup.all()
-    try meetup.forEach { meetup in
-      user.forEach { user in
-        if meetup.userId != user.id {
-          let invite = Invitation(inviterId: meetup.userId, inviteeId: user.id!, meetupId: meetup.id!)
-          try? invite.save()
-          console.print("add user \(user.displayName)")
-        }
+    let meetups = try Meetup.all()
+    
+    try meetups.forEach { meetup in
+      let friends = try Friend.makeQuery().filter("userId", meetup.userId).all()
+      friends.forEach { friend in
+        let invitation = Invitation(inviterId: meetup.userId, inviteeId: friend.id!, meetupId: meetup.id!)
+        try? invitation.save()
+        console.print("Invitation saved for: \(meetup.title)")
       }
     }
   }
@@ -110,6 +120,7 @@ public final class SeedCommand: Command {
 		try addMeetupTypes()
 		try addUsers()
 		try addMeetups()
+    try addFriends()
     try addInvites()
 	}
 }
