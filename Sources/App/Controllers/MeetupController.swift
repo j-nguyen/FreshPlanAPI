@@ -117,7 +117,15 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
       throw Abort(.conflict, reason: "You can't delete someone's meetup!")
     }
     
+    // if there are any invitations, I will need to delete them
+    let invitations = try meetup.invitations.all()
+    
+    try invitations.forEach { invite in
+      try invite.delete()
+    }
+    
     try meetup.delete()
+    
     return Response(status: .ok)
   }
   
