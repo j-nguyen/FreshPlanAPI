@@ -3,6 +3,9 @@
 import Vapor
 import HTTP
 
+/**
+ OneSignalService - Designed to send out notifications to devices
+**/
 public final class OneSignalService {
   private let apiKey: String
   private let appId: String
@@ -23,27 +26,22 @@ public final class OneSignalService {
   }
   
   /**
-   Sends a notification right now
+   Sends out a notification
    - parameters:
      - invitee: User - The user that is getting the notification
      - content: String - the message of the notification
   **/
-  public func sendInvitedNotification(invitee: User, content: String) throws {
-    guard let deviceToken = invitee.deviceToken else {
-      throw Abort(.notFound, reason: "User must have a device token to receive a notification!")
-    }
+  public func sendNotification(user: User, content: String) throws -> Response {
     // set up URL
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
     var content = JSON()
     try content.set("en", content)
-    
     // set up our JSON values
     var json = JSON()
     try json.set("app_id", appId)
-    try json.set("include_player_ids", [deviceToken])
+    try json.set("include_player_ids", [user.deviceToken ?? ""])
     try json.set("contents", content.makeJSON())
-    
     // set up the headers
     let headers: [HeaderKey: String] = [
       .contentType: "application/json",
@@ -52,6 +50,95 @@ public final class OneSignalService {
     
     let request = Request(method: .post, uri: url, headers: headers, body: json.makeBody())
     
-    try EngineClient.factory.respond(to: request)
+    return try EngineClient.factory.respond(to: request)
+  }
+  
+  /**
+   Sends a notification to the person who requested to become friends with that user
+   - parameters:
+     - user: User - A list of users we want to send the notification to
+     - content: String - The content of which the information
+  **/
+  public func sendBatchNotifications(users: [User], content: String) throws -> Response {
+    let url = "\(baseUrl)/notifications"
+    // set up the content JSON
+    var content = JSON()
+    try content.set("en", content)
+    // set up our JSON Values
+    // set a variable for map users
+    let deviceTokens: [String] = users.map { $0.deviceToken ?? "" }
+    var json = JSON()
+    try json.set("app_id", appId)
+    try json.set("include_player_ids", deviceTokens)
+    try json.set("contents", content.makeJSON())
+    // set up our headers
+    let headers: [HeaderKey: String] = [
+      .contentType: "application/json",
+      .authorization: "Basic \(apiKey)"
+    ]
+    // setup the request
+    let request = Request(method: .post, uri: url, headers: headers, body: json.makeBody())
+    
+    return try EngineClient.factory.respond(to: request)
+  }
+  
+  /**
+   Sends a scheduled meetup notification
+   - parameters:
+     - user: User - `User` object for who we're sending the notification to
+     - date: Date - `Date` object of the date when it's being delivered
+     - content: String - The content information of what to talk about
+   **/
+  public func sendScheduledNotification(user: User, date: Date, content: String) throws -> Response {
+    let url = "\(baseUrl)/notifications"
+    // set up the content JSON
+    var content = JSON()
+    try content.set("en", content)
+    // set up our JSON Values
+    var json = JSON()
+    try json.set("app_id", appId)
+    try json.set("include_player_ids", [user.deviceToken ?? ""])
+    try json.set("send_after", date.dateString)
+    try json.set("contents", content.makeJSON())
+    // set up our headers
+    let headers: [HeaderKey: String] = [
+      .contentType: "application/json",
+      .authorization: "Basic \(apiKey)"
+    ]
+    // setup the request
+    let request = Request(method: .post, uri: url, headers: headers, body: json.makeBody())
+    
+    return try EngineClient.factory.respond(to: request)
+  }
+  
+  /**
+   Sends a batched scheduled meetup notification
+   - parameters:
+   - user: User - `User` object for who we're sending the notification to
+   - date: Date - `Date` object of the date when it's being delivered
+   - content: String - The content information of what to talk about
+   **/
+  public func sendBatchedScheduledNotification(users: [User], date: Date, content: String) throws -> Response {
+    let url = "\(baseUrl)/notifications"
+    // set up the content JSON
+    var content = JSON()
+    try content.set("en", content)
+    // set up our JSON Values
+    // set a variable for map users
+    let deviceTokens: [String] = users.map { $0.deviceToken ?? "" }
+    var json = JSON()
+    try json.set("app_id", appId)
+    try json.set("include_player_ids", deviceTokens)
+    try json.set("send_after", date.dateString)
+    try json.set("contents", content.makeJSON())
+    // set up our headers
+    let headers: [HeaderKey: String] = [
+      .contentType: "application/json",
+      .authorization: "Basic \(apiKey)"
+    ]
+    // setup the request
+    let request = Request(method: .post, uri: url, headers: headers, body: json.makeBody())
+    
+    return try EngineClient.factory.respond(to: request)
   }
 }
