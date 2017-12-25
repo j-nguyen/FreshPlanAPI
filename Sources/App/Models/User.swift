@@ -112,8 +112,9 @@ extension User: JSONConvertible {
 		try self.init(
 			displayName: try json.get("displayName"),
 		  email: try json.get("email"),
-		  password: try json.get("password")
-		)
+		  password: try json.get("password"),
+      deviceToken: json["deviceToken"]?.string
+    )
 	}
 	
 	public func makeJSON() throws -> JSON {
