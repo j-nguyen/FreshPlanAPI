@@ -37,7 +37,7 @@ public final class OneSignalService {
     // set up the content JSON
     var content = JSON()
     try content.set("en", content)
-    // set up our JSON values
+    // set up our JSON valuese
     var json = JSON()
     try json.set("app_id", appId)
     try json.set("include_player_ids", [user.deviceToken ?? ""])
@@ -47,10 +47,17 @@ public final class OneSignalService {
       .contentType: "application/json",
       .authorization: "Basic \(apiKey)"
     ]
-    
+    // setup the request
     let request = Request(method: .post, uri: url, headers: headers, body: json.makeBody())
+
+    let response = try EngineClient.factory.respond(to: request)
     
-    return try EngineClient.factory.respond(to: request)
+    if let responseJSON = response.json {
+      let notification = try NotificationManager(json: responseJSON)
+      try notification.save()
+    }
+    
+    return Response(status: .ok)
   }
   
   /**
@@ -79,7 +86,15 @@ public final class OneSignalService {
     // setup the request
     let request = Request(method: .post, uri: url, headers: headers, body: json.makeBody())
     
-    return try EngineClient.factory.respond(to: request)
+    // setup the request
+    let response = try EngineClient.factory.respond(to: request)
+    
+    if let responseJSON = response.json {
+      let notification = try NotificationManager(json: responseJSON)
+      try notification.save()
+    }
+    
+    return Response(status: .ok)
   }
   
   /**
@@ -107,8 +122,15 @@ public final class OneSignalService {
     ]
     // setup the request
     let request = Request(method: .post, uri: url, headers: headers, body: json.makeBody())
+    // setup the request
+    let response = try EngineClient.factory.respond(to: request)
     
-    return try EngineClient.factory.respond(to: request)
+    if let responseJSON = response.json {
+      let notification = try NotificationManager(json: responseJSON)
+      try notification.save()
+    }
+    
+    return Response(status: .ok)
   }
   
   /**
@@ -139,6 +161,13 @@ public final class OneSignalService {
     // setup the request
     let request = Request(method: .post, uri: url, headers: headers, body: json.makeBody())
     
-    return try EngineClient.factory.respond(to: request)
+    let response = try EngineClient.factory.respond(to: request)
+    
+    if let responseJSON = response.json {
+      let notification = try NotificationManager(json: responseJSON)
+      try notification.save()
+    }
+    
+    return Response(status: .ok)
   }
 }

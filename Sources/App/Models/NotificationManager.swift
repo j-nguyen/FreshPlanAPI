@@ -41,3 +41,9 @@ extension NotificationManager: Preparation {
     try database.delete(self)
   }
 }
+
+extension NotificationManager: JSONInitializable {
+  public convenience init(json: JSON) throws {
+    try self.init(uuid: json.get("uuid"))
+  }
+}
