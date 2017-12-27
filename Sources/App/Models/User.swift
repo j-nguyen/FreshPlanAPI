@@ -15,15 +15,17 @@ public final class User: Model, Timestampable {
 	public var email: String
 	public var password: String
 	public var profileURL: String
+  public var deviceToken: String?
 	public var verified: Bool = false
 	
 	public let storage = Storage()
 	
-	public init(displayName: String, email: String, password: String, verified: Bool = false) throws {
+  public init(displayName: String, email: String, password: String, deviceToken: String? = nil, verified: Bool = false) throws {
     self.displayName = displayName
 		self.email = email
 		self.password = password
 		self.profileURL = try displayName.generatePlaceholder()
+    self.deviceToken = deviceToken
 		self.verified = verified
 	}
 	
@@ -32,6 +34,7 @@ public final class User: Model, Timestampable {
 		email = try row.get("email")
 		password = try row.get("password")
 		profileURL = try row.get("profileURL")
+    deviceToken = try row.get("deviceToken")
 		verified = try row.get("verified")
 	}
 	
@@ -41,6 +44,7 @@ public final class User: Model, Timestampable {
 		try row.set("email", email)
 		try row.set("password", password)
     try row.set("profileURL", profileURL)
+    try row.set("deviceToken", deviceToken)
 		try row.set("verified", verified)
 		return row
 	}
@@ -93,6 +97,7 @@ extension User: Preparation {
 			user.string("email", unique: true)
 			user.string("password")
 			user.string("profileURL")
+      user.string("deviceToken", optional: true, unique: true)
 			user.bool("verified", default: false)
 		}
 	}
@@ -107,8 +112,9 @@ extension User: JSONConvertible {
 		try self.init(
 			displayName: try json.get("displayName"),
 		  email: try json.get("email"),
-		  password: try json.get("password")
-		)
+		  password: try json.get("password"),
+      deviceToken: json["deviceToken"]?.string
+    )
 	}
 	
 	public func makeJSON() throws -> JSON {
