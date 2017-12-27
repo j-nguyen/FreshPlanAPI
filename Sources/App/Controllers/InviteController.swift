@@ -45,9 +45,12 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
     try invite.save()
     
     // send email
-    guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
+    guard let config = droplet?.config["sendgrid"] else { throw Abort.serverError }
     let emailController = try EmailController(config: config)
     try emailController.sendInvitationEmail(from: inviter, to: invitee, meetup: meetup.title)
+    
+    // send out notification
+    guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
     
     return Response(status: .ok)
   }

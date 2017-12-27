@@ -31,7 +31,7 @@ public final class OneSignalService {
      - invitee: User - The user that is getting the notification
      - content: String - the message of the notification
   **/
-  public func sendNotification(user: User, content: String) throws -> Response {
+  public func sendNotification(user: User, content: String) throws {
     // set up URL
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
@@ -56,8 +56,6 @@ public final class OneSignalService {
       let notification = try NotificationManager(json: responseJSON)
       try notification.save()
     }
-    
-    return Response(status: .ok)
   }
   
   /**
@@ -66,7 +64,7 @@ public final class OneSignalService {
      - user: User - A list of users we want to send the notification to
      - content: String - The content of which the information
   **/
-  public func sendBatchNotifications(users: [User], content: String) throws -> Response {
+  public func sendBatchNotifications(users: [User], content: String) throws {
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
     var content = JSON()
@@ -93,8 +91,6 @@ public final class OneSignalService {
       let notification = try NotificationManager(json: responseJSON)
       try notification.save()
     }
-    
-    return Response(status: .ok)
   }
   
   /**
@@ -104,7 +100,7 @@ public final class OneSignalService {
      - date: Date - `Date` object of the date when it's being delivered
      - content: String - The content information of what to talk about
    **/
-  public func sendScheduledNotification(user: User, date: Date, content: String) throws -> Response {
+  public func sendScheduledNotification(user: User, date: Date, content: String) throws {
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
     var content = JSON()
@@ -129,8 +125,6 @@ public final class OneSignalService {
       let notification = try NotificationManager(json: responseJSON)
       try notification.save()
     }
-    
-    return Response(status: .ok)
   }
   
   /**
@@ -140,7 +134,7 @@ public final class OneSignalService {
    - date: Date - `Date` object of the date when it's being delivered
    - content: String - The content information of what to talk about
    **/
-  public func sendBatchedScheduledNotification(users: [User], date: Date, content: String) throws -> Response {
+  public func sendBatchedScheduledNotification(users: [User], date: Date, content: String) throws {
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
     var content = JSON()
@@ -167,7 +161,5 @@ public final class OneSignalService {
       let notification = try NotificationManager(json: responseJSON)
       try notification.save()
     }
-    
-    return Response(status: .ok)
   }
 }

@@ -52,6 +52,17 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     
     try meetup.save()
     
+    // create a scheduled notification for later
+    // create a notification for later use
+    if meetup.startDate >= Date() {
+      guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
+      guard let user = try meetup.user.get() else { throw Abort.notFound }
+      let notificationService = try OneSignalService(config: config)
+      // send another one too prior 3 hours
+      try notificationService.sendScheduledNotification(user: user, date: meetup.startDate, content: "Your meetup is starting!")
+      try notificationService.sendScheduledNotification(user: user, date: meetup.startDate.addingTimeInterval(-10800), content: "Your meetup is starting in 3 hours!")
+    }
+    
     return Response(status: .ok)
   }
   
@@ -99,11 +110,32 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     
     meetup.title = request.json?["title"]?.string ?? meetup.title
     meetup.description = request.json?["description"]?.string ?? meetup.description
+    
+    if let startDate = request.json?["startDate"]?.date {
+      guard startDate > meetup.endDate else {
+        throw Abort(.conflict, reason: "Your start date can't be higher than your end date")
+      }
+      meetup.startDate = startDate
+    }
+    
+    meetup.endDate = request.json?["endDate"]?.date ?? meetup.endDate
     meetup.startDate = request.json?["startDate"]?.date ?? meetup.startDate
     meetup.endDate = request.json?["endDate"]?.date ?? meetup.endDate
     meetup.metadata = request.json?["metadata"]?.string ?? meetup.metadata
     
     try meetup.save()
+    
+    // send a notification
+    guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
+    let notificationService = try OneSignalService(config: config)
+    
+    // get all the invites
+    let invites = try meetup.invitations
+      .all()
+      .map { try $0.invitee.get() }
+      .flatMap { $0 }
+    
+    try notificationService.sendBatchNotifications(users: invites, content: "The meetup: \(meetup.title), has been updated!")
     
     return Response(status: .ok)
   }
@@ -120,11 +152,19 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     // if there are any invitations, I will need to delete them
     let invitations = try meetup.invitations.all()
     
+    let invitedUsers = try invitations.map { try $0.invitee.get() }.flatMap { $0 }
+    
     try invitations.forEach { invite in
       try invite.delete()
     }
     
     try meetup.delete()
+    
+    // send a notification
+    guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
+    let notificationService = try OneSignalService(config: config)
+  
+    try notificationService.sendBatchNotifications(users: invitedUsers, content: "The meetup: \(meetup.title), has been deleted!")
     
     return Response(status: .ok)
   }
