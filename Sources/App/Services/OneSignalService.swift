@@ -51,6 +51,7 @@ public final class OneSignalService {
     let request = Request(method: .post, uri: url, headers: headers, body: json.makeBody())
 
     let response = try EngineClient.factory.respond(to: request)
+    print (response)
     
     if let responseJSON = response.json {
       let notification = try NotificationManager(json: responseJSON)
