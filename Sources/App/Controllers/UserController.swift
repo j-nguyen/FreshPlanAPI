@@ -13,10 +13,14 @@ public final class UserController: EmptyInitializable, ResourceRepresentable {
 	
 	// get all the users
 	public func getAllUsers(_ request: Request) throws -> ResponseRepresentable {
+    guard let userId = request.headers["userId"]?.int else { throw Abort.badRequest }
 		
 		// if a search query shows up, we can filter based on the contains
 		if let search = request.query?["search"]?.string {
-      let users = try User.makeQuery().filter("displayName", .custom("~*"), search).all()
+      let users = try User.makeQuery()
+        .filter("displayName", .custom("~*"), search)
+        .filter("id", .notEquals, userId)
+        .all()
       
 			return try users.makeJSON()
 		}
