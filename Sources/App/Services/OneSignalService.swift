@@ -35,13 +35,13 @@ public final class OneSignalService {
     // set up URL
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
-    var content = JSON()
-    try content.set("en", content)
+    var message = JSON()
+    try message.set("en", content)
     // set up our JSON valuese
     var json = JSON()
     try json.set("app_id", appId)
     try json.set("include_player_ids", [user.deviceToken ?? ""])
-    try json.set("contents", content.makeJSON())
+    try json.set("contents", message.makeJSON())
     // set up the headers
     let headers: [HeaderKey: String] = [
       .contentType: "application/json",
@@ -52,8 +52,9 @@ public final class OneSignalService {
 
     let response = try EngineClient.factory.respond(to: request)
     
-    if let responseJSON = response.json {
-      let notification = try NotificationManager(json: responseJSON)
+    if let responseJSON = response.json, response.status.statusCode >= 200 && response.status.statusCode <= 299 {
+      let uuid: String = try responseJSON.get("id")
+      let notification = NotificationManager(uuid: uuid)
       try notification.save()
     }
   }
@@ -67,15 +68,15 @@ public final class OneSignalService {
   public func sendBatchNotifications(users: [User], content: String) throws {
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
-    var content = JSON()
-    try content.set("en", content)
+    var message = JSON()
+    try message.set("en", content)
     // set up our JSON Values
     // set a variable for map users
     let deviceTokens: [String] = users.map { $0.deviceToken ?? "" }
     var json = JSON()
     try json.set("app_id", appId)
     try json.set("include_player_ids", deviceTokens)
-    try json.set("contents", content.makeJSON())
+    try json.set("contents", message.makeJSON())
     // set up our headers
     let headers: [HeaderKey: String] = [
       .contentType: "application/json",
@@ -87,7 +88,7 @@ public final class OneSignalService {
     // setup the request
     let response = try EngineClient.factory.respond(to: request)
     
-    if let responseJSON = response.json {
+    if let responseJSON = response.json, response.status.statusCode >= 200 && response.status.statusCode <= 299 {
       let notification = try NotificationManager(json: responseJSON)
       try notification.save()
     }
@@ -103,14 +104,14 @@ public final class OneSignalService {
   public func sendScheduledNotification(user: User, date: Date, content: String) throws {
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
-    var content = JSON()
-    try content.set("en", content)
+    var message = JSON()
+    try message.set("en", content)
     // set up our JSON Values
     var json = JSON()
     try json.set("app_id", appId)
     try json.set("include_player_ids", [user.deviceToken ?? ""])
     try json.set("send_after", date.dateString)
-    try json.set("contents", content.makeJSON())
+    try json.set("contents", message.makeJSON())
     // set up our headers
     let headers: [HeaderKey: String] = [
       .contentType: "application/json",
@@ -121,7 +122,7 @@ public final class OneSignalService {
     // setup the request
     let response = try EngineClient.factory.respond(to: request)
     
-    if let responseJSON = response.json {
+    if let responseJSON = response.json, response.status.statusCode >= 200 && response.status.statusCode <= 299 {
       let notification = try NotificationManager(json: responseJSON)
       try notification.save()
     }
@@ -137,8 +138,8 @@ public final class OneSignalService {
   public func sendBatchedScheduledNotification(users: [User], date: Date, content: String) throws {
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
-    var content = JSON()
-    try content.set("en", content)
+    var message = JSON()
+    try message.set("en", content)
     // set up our JSON Values
     // set a variable for map users
     let deviceTokens: [String] = users.map { $0.deviceToken ?? "" }
@@ -146,7 +147,7 @@ public final class OneSignalService {
     try json.set("app_id", appId)
     try json.set("include_player_ids", deviceTokens)
     try json.set("send_after", date.dateString)
-    try json.set("contents", content.makeJSON())
+    try json.set("contents", message.makeJSON())
     // set up our headers
     let headers: [HeaderKey: String] = [
       .contentType: "application/json",
@@ -157,7 +158,7 @@ public final class OneSignalService {
     
     let response = try EngineClient.factory.respond(to: request)
     
-    if let responseJSON = response.json {
+    if let responseJSON = response.json, response.status.statusCode >= 200 && response.status.statusCode <= 299 {
       let notification = try NotificationManager(json: responseJSON)
       try notification.save()
     }
