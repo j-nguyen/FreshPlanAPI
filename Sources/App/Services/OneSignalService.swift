@@ -166,6 +166,36 @@ public final class OneSignalService {
       try notification.save()
     }
   }
+  
+  /**
+    Cancels all the notifications based on the type and typeId given
+   - parameters:
+     - type: The type its given
+     - typeId: The Id found
+  **/
+  public func cancelNotification(type: NotificationManager.Notification, typeId: Int) throws {
+    // create headers
+    let headers: [HeaderKey: String] = [
+      .contentType: "application/json",
+      .authorization: "Basic \(apiKey)"
+    ]
+    // get all the notifications that we're going to cancel
+    let notifications = try NotificationManager.makeQuery()
+      .filter("type", type.rawValue)
+      .filter("typeId", typeId)
+      .all()
+    
+    // attempt to delete each request
+    try notifications.forEach { notification in
+      let url = "\(baseUrl)/notifications/\(notification.uuid)?app_id=\(appId)"
+      let request = Request(method: .delete, uri: url, headers: headers)
+      let response = try EngineClient.factory.respond(to: request)
+      // check the response, and if it's successful, we delete
+      if response.status.statusCode >= 200 && response.status.statusCode <= 299 {
+        try notification.delete()
+      }
+    }
+  }
 }
 
 extension NotificationManager {

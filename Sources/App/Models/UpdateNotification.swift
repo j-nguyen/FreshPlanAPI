@@ -9,8 +9,9 @@ import Foundation
 import Vapor
 import FluentProvider
 
-public struct Migration: Preparation {
+public struct UpdateNotification: Preparation {
   public static func prepare(_ database: Database) throws {
+    try NotificationManager.makeQuery().delete()
     try database.modify(NotificationManager.self) { db in
       db.string("type")
       db.int("typeId")

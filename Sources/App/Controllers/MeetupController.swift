@@ -163,7 +163,8 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     // send a notification
     guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
     let notificationService = try OneSignalService(config: config)
-  
+    
+    try notificationService.cancelNotification(type: .meetup, typeId: meetup.id!.int!)
     try notificationService.sendBatchNotifications(users: invitedUsers, content: "The meetup: \(meetup.title), has been deleted!", type: .meetup, typeId: meetup.id!.int!)
     
     return Response(status: .ok)
