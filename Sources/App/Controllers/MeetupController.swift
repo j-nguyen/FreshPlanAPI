@@ -179,19 +179,3 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     )
   }
 }
-
-extension Request {
-  fileprivate func meetup() throws -> Meetup {
-    guard let userId = headers["userId"]?.int, let meetupId = parameters["meetupId"]?.int else {
-      throw Abort.badRequest
-    }
-    
-    // once we get userId, we'll find all the ties between meetup
-    guard let meetup = try Meetup.makeQuery().filter("userId", userId)
-      .and({ try $0.filter("meetupId", meetupId) }).first() else {
-        throw Abort.notFound
-    }
-    
-    return meetup
-  }
-}

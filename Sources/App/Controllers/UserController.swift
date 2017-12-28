@@ -54,30 +54,3 @@ public final class UserController: EmptyInitializable, ResourceRepresentable {
     )
   }
 }
-
-extension Request {
-	fileprivate func friend() throws -> Friend {
-		guard let userId = parameters["userId"]?.int,
-			let friendId = parameters["friendId"]?.int else {
-				throw Abort.badRequest
-		}
-		
-		guard let friend = try Friend.makeQuery().filter("userId", userId).and({ try $0.filter("friendId", friendId) }).first() else {
-			throw Abort.notFound
-		}
-		
-		return friend
-	}
-	
-	fileprivate func user() throws -> User {
-		guard let userId = parameters["userId"]?.int else {
-			throw Abort.badRequest
-		}
-	
-		guard let user = try User.find(userId) else {
-			throw Abort.notFound
-		}
-		
-		return user
-	}
-}

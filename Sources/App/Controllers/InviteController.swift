@@ -120,18 +120,3 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
     )
   }
 }
-
-extension Request {
-  fileprivate func invite() throws -> Invitation {
-    guard let id = parameters["inviteId"]?.int, let userId = headers["userId"]?.int else {
-      throw Abort.badRequest
-    }
-    
-    guard let invitation = try Invitation.makeQuery().filter("id", id)
-      .and({ try $0.filter("userId", userId) }).first() else {
-        throw Abort.notFound
-    }
-    
-    return invitation
-  }
-}
