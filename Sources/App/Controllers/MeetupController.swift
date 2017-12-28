@@ -60,7 +60,7 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
       let notificationService = try OneSignalService(config: config)
       // send another one too prior 3 hours
       try notificationService.sendScheduledNotification(user: user, date: meetup.startDate, content: "Your meetup is starting!")
-      try notificationService.sendScheduledNotification(user: user, date: meetup.startDate.addingTimeInterval(-10800), content: "Your meetup is starting in 3 hours!")
+      try notificationService.sendScheduledNotification(user: user, date: meetup.startDate.addingTimeInterval(-3600), content: "Your meetup is starting in an hour!")
     }
     
     return Response(status: .ok)

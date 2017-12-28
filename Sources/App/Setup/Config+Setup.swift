@@ -36,5 +36,6 @@ extension Config {
 		preparations.append(Invitation.self)
 		preparations.append(FriendRequest.self)
     preparations.append(Friend.self)
+    preparations.append(NotificationManager.self)
 	}
 }
