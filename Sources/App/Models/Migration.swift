@@ -11,6 +11,11 @@ import FluentProvider
 
 public struct Migration: Preparation {
   public static func prepare(_ database: Database) throws {
+    try database.modify(NotificationManager.self) { db in
+      db.string("type")
+      db.int("typeId")
+      db.raw("UNIQUE(\"uuid\", \"type\", \"typeId\")")
+    }
   }
   
   public static func revert(_ database: Database) throws {

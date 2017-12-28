@@ -31,7 +31,7 @@ public final class OneSignalService {
      - invitee: User - The user that is getting the notification
      - content: String - the message of the notification
   **/
-  public func sendNotification(user: User, content: String) throws {
+  public func sendNotification(user: User, content: String, type: NotificationManager.Notification, typeId: Int) throws {
     // set up URL
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
@@ -54,7 +54,7 @@ public final class OneSignalService {
     
     if let responseJSON = response.json, response.status.statusCode >= 200 && response.status.statusCode <= 299 {
       let uuid: String = try responseJSON.get("id")
-      let notification = NotificationManager(uuid: uuid)
+      let notification = NotificationManager(uuid: uuid, type: type.rawValue, typeId: typeId)
       try notification.save()
     }
   }
@@ -65,7 +65,7 @@ public final class OneSignalService {
      - user: User - A list of users we want to send the notification to
      - content: String - The content of which the information
   **/
-  public func sendBatchNotifications(users: [User], content: String) throws {
+  public func sendBatchNotifications(users: [User], content: String, type: NotificationManager.Notification, typeId: Int) throws {
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
     var message = JSON()
@@ -89,7 +89,8 @@ public final class OneSignalService {
     let response = try EngineClient.factory.respond(to: request)
     
     if let responseJSON = response.json, response.status.statusCode >= 200 && response.status.statusCode <= 299 {
-      let notification = try NotificationManager(json: responseJSON)
+      let uuid: String = try responseJSON.get("id")
+      let notification = NotificationManager(uuid: uuid, type: type.rawValue, typeId: typeId)
       try notification.save()
     }
   }
@@ -101,7 +102,7 @@ public final class OneSignalService {
      - date: Date - `Date` object of the date when it's being delivered
      - content: String - The content information of what to talk about
    **/
-  public func sendScheduledNotification(user: User, date: Date, content: String) throws {
+  public func sendScheduledNotification(user: User, date: Date, content: String, type: NotificationManager.Notification, typeId: Int) throws {
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
     var message = JSON()
@@ -123,7 +124,8 @@ public final class OneSignalService {
     let response = try EngineClient.factory.respond(to: request)
     
     if let responseJSON = response.json, response.status.statusCode >= 200 && response.status.statusCode <= 299 {
-      let notification = try NotificationManager(json: responseJSON)
+      let uuid: String = try responseJSON.get("id")
+      let notification = NotificationManager(uuid: uuid, type: type.rawValue, typeId: typeId)
       try notification.save()
     }
   }
@@ -135,7 +137,7 @@ public final class OneSignalService {
    - date: Date - `Date` object of the date when it's being delivered
    - content: String - The content information of what to talk about
    **/
-  public func sendBatchedScheduledNotification(users: [User], date: Date, content: String) throws {
+  public func sendBatchedScheduledNotification(users: [User], date: Date, content: String, type: NotificationManager.Notification, typeId: Int) throws {
     let url = "\(baseUrl)/notifications"
     // set up the content JSON
     var message = JSON()
@@ -159,8 +161,17 @@ public final class OneSignalService {
     let response = try EngineClient.factory.respond(to: request)
     
     if let responseJSON = response.json, response.status.statusCode >= 200 && response.status.statusCode <= 299 {
-      let notification = try NotificationManager(json: responseJSON)
+      let uuid: String = try responseJSON.get("id")
+      let notification = NotificationManager(uuid: uuid, type: type.rawValue, typeId: typeId)
       try notification.save()
     }
+  }
+}
+
+extension NotificationManager {
+  public enum Notification: String {
+    case meetup
+    case invitation
+    case friend
   }
 }

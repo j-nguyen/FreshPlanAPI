@@ -52,7 +52,7 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
     // send out notification
     guard let onesignal = droplet?.config["onesignal"] else { throw Abort.serverError }
     let notificationService = try OneSignalService(config: onesignal)
-    try notificationService.sendNotification(user: invitee, content: "\(inviter.displayName) has invited you to join \(meetup.title)! Click to join!")
+    try notificationService.sendNotification(user: invitee, content: "\(inviter.displayName) has invited you to join \(meetup.title)! Click to join!", type: .invitation, typeId: invite.id!.int!)
     
     return Response(status: .ok)
   }
@@ -94,7 +94,7 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
       // attempt to send notification
       guard let onesignal = droplet?.config["onesignal"] else { throw Abort.serverError }
       let notificationService = try OneSignalService(config: onesignal)
-      try notificationService.sendNotification(user: inviter, content: "\(invitee.displayName) has joined \(meetup.title)!")
+      try notificationService.sendNotification(user: inviter, content: "\(invitee.displayName) has joined \(meetup.title)!", type: .invitation, typeId: invite.id!.int!)
     }
     return Response(status: .ok)
   }
