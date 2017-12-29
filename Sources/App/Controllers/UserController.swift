@@ -13,10 +13,14 @@ public final class UserController: EmptyInitializable, ResourceRepresentable {
 	
 	// get all the users
 	public func getAllUsers(_ request: Request) throws -> ResponseRepresentable {
+    guard let userId = request.headers["userId"]?.int else { throw Abort.badRequest }
 		
 		// if a search query shows up, we can filter based on the contains
 		if let search = request.query?["search"]?.string {
-      let users = try User.makeQuery().filter("displayName", .custom("~*"), search).all()
+      let users = try User.makeQuery()
+        .filter("displayName", .custom("~*"), search)
+        .filter("id", .notEquals, userId)
+        .all()
       
 			return try users.makeJSON()
 		}
@@ -53,31 +57,4 @@ public final class UserController: EmptyInitializable, ResourceRepresentable {
       update: updateUser
     )
   }
-}
-
-extension Request {
-	fileprivate func friend() throws -> Friend {
-		guard let userId = parameters["userId"]?.int,
-			let friendId = parameters["friendId"]?.int else {
-				throw Abort.badRequest
-		}
-		
-		guard let friend = try Friend.makeQuery().filter("userId", userId).and({ try $0.filter("friendId", friendId) }).first() else {
-			throw Abort.notFound
-		}
-		
-		return friend
-	}
-	
-	fileprivate func user() throws -> User {
-		guard let userId = parameters["userId"]?.int else {
-			throw Abort.badRequest
-		}
-	
-		guard let user = try User.find(userId) else {
-			throw Abort.notFound
-		}
-		
-		return user
-	}
 }

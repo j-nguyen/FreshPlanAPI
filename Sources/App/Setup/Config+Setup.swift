@@ -28,7 +28,6 @@ extension Config {
 	/// Add all models that should have their
 	/// schemas prepared before the app boots
 	private func setupPreparations() throws {
-    preparations.append(Migration.self)
 		preparations.append(User.self)
 		preparations.append(Verification.self)
 		preparations.append(MeetupType.self)
@@ -37,5 +36,6 @@ extension Config {
 		preparations.append(FriendRequest.self)
     preparations.append(Friend.self)
     preparations.append(NotificationManager.self)
+    preparations.append(UpdateNotification.self)
 	}
 }

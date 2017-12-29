@@ -23,18 +23,18 @@ public final class SeedCommand: Command {
 	
 	fileprivate func addMeetupTypes() throws {
 		if let meetupType = meetupType {
-			try meetupType.forEach { type in
+			try? meetupType.forEach { type in
 				guard let name = type.string else { throw Abort.notFound }
 				console.print("Saving meetup type: \(name)")
 				let meetupObj = MeetupType(type: name)
-				try meetupObj.save()
+				try? meetupObj.save()
 				console.print("Done.")
 			}
 		}
 	}
 	
 	fileprivate func addUsers() throws {
-		for i in 1...10 {
+		for i in 1...5 {
 			let user = try User(
 				displayName: "fakeuser\(i)",
 				email: "fakeuser\(i)@example.com",
@@ -42,26 +42,28 @@ public final class SeedCommand: Command {
 			)
 			user.verified = true
 			console.print("Attempting to add \(user.displayName)")
-			try User.register(user: user)
+			try? User.register(user: user)
 			console.print("User added.")
 		}
-		console.print("Added 10 users.")
+		console.print("Added 5 users.")
 	}
   
   fileprivate func addFriends() throws {
     let users = try User.all()
-    var j = users.count - 1
-    for i in 0...users.count / 2 {
-      let friend = Friend(userId: users[i].id!, friendId: users[j].id!)
-      try? friend.save()
-      j -= 1
-      console.print("Friend Saved!")
+    
+    users.forEach { user in
+      users.forEach { other in
+        if user.id != other.id {
+          let friend = Friend(userId: user.id!, friendId: other.id!)
+          try? friend.save()
+          console.print("\(user.displayName) and \(other.displayName) are now friends!")
+        }
+      }
     }
   }
     
   fileprivate func addInvites() throws {
     let meetups = try Meetup.all()
-    
     try meetups.forEach { meetup in
       let friends = try Friend.makeQuery().filter("userId", meetup.userId).all()
       friends.forEach { friend in
@@ -73,9 +75,8 @@ public final class SeedCommand: Command {
   }
 	
 	fileprivate func addMeetups() throws {
-    guard let currentUser = try User.find(1) else { return }
     let meetupTypes = try MeetupType.all()
-    let users = try User.makeQuery().filter("id", .notEquals, currentUser.id).all()
+    let users = try User.all()
     let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc."
     let currentDate = Date()
     
@@ -91,37 +92,29 @@ public final class SeedCommand: Command {
     let otherJSONString = try otherJSON.serialize().makeString()
     
     users.forEach { user in
-      let code = getRandomNum(0, 1)
-      
-      let meetup = Meetup(
-        meetupTypeId: meetupTypes[code].id!,
-        userId: currentUser.id!,
-        title: "Meetup-\(meetupTypes[code].type)-\(user.id!.int!)",
-        description: description,
-        startDate: currentDate,
-        endDate: currentDate.addingTimeInterval(15241),
-        metadata: (meetupTypes[code].type == "location") ? locationJSONString : otherJSONString
-      )
-      try? meetup.save()
-      console.print("Saved meetup: \(meetup.title)")
+      for index in 0...1 {
+        let meetup = Meetup(
+          meetupTypeId: meetupTypes[index].id!,
+          userId: user.id!,
+          title: "Meetup-\(meetupTypes[index].type)-\(user.id!.int!)",
+          description: description,
+          startDate: currentDate.addingTimeInterval(13492),
+          endDate: currentDate.addingTimeInterval(124342),
+          metadata: (meetupTypes[index].type == "location") ? locationJSONString : otherJSONString
+        )
+        try? meetup.save()
+        console.print("Saved meetup: \(meetup.title)")
+      }
     }
 	}
-  
-  fileprivate func getRandomNum(_ min: Int, _ max: Int) -> Int {
-    #if os(Linux)
-      return Int(random() % max) + min
-    #else
-      return Int(arc4random_uniform(UInt32(max)) + UInt32(min))
-    #endif
-  }
 	
 	public func run(arguments: [String]) throws {
 		console.print("running custom command..")
-		try addMeetupTypes()
-		try addUsers()
-		try addMeetups()
-    try addFriends()
-    try addInvites()
+		try? addMeetupTypes()
+		try? addUsers()
+		try? addMeetups()
+    try? addFriends()
+    try? addInvites()
 	}
 }
 

@@ -52,7 +52,7 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
     // send out notification
     guard let onesignal = droplet?.config["onesignal"] else { throw Abort.serverError }
     let notificationService = try OneSignalService(config: onesignal)
-    try notificationService.sendNotification(user: invitee, content: "\(inviter.displayName) has invited you to join \(meetup.title)! Click to join!")
+    try notificationService.sendNotification(user: invitee, content: "\(inviter.displayName) has invited you to join \(meetup.title)! Click to join!", type: .invitation, typeId: invite.id!.int!)
     
     return Response(status: .ok)
   }
@@ -94,7 +94,7 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
       // attempt to send notification
       guard let onesignal = droplet?.config["onesignal"] else { throw Abort.serverError }
       let notificationService = try OneSignalService(config: onesignal)
-      try notificationService.sendNotification(user: inviter, content: "\(invitee.displayName) has joined \(meetup.title)!")
+      try notificationService.sendNotification(user: inviter, content: "\(invitee.displayName) has joined \(meetup.title)!", type: .invitation, typeId: invite.id!.int!)
     }
     return Response(status: .ok)
   }
@@ -118,20 +118,5 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
       update: updateInvite,
       destroy: deleteInvite
     )
-  }
-}
-
-extension Request {
-  fileprivate func invite() throws -> Invitation {
-    guard let id = parameters["inviteId"]?.int, let userId = headers["userId"]?.int else {
-      throw Abort.badRequest
-    }
-    
-    guard let invitation = try Invitation.makeQuery().filter("id", id)
-      .and({ try $0.filter("userId", userId) }).first() else {
-        throw Abort.notFound
-    }
-    
-    return invitation
   }
 }
