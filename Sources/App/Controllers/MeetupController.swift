@@ -59,8 +59,8 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
       guard let user = try meetup.user.get() else { throw Abort.notFound }
       let notificationService = try OneSignalService(config: config)
       // send another one too prior 3 hours
-      try notificationService.sendScheduledNotification(user: user, date: meetup.startDate, content: "Your meetup is starting!")
-      try notificationService.sendScheduledNotification(user: user, date: meetup.startDate.addingTimeInterval(-3600), content: "Your meetup is starting in an hour!")
+      try notificationService.sendScheduledNotification(user: user, date: meetup.startDate, content: "Your meetup is starting!", type: .meetup, typeId: meetup.id!.int!)
+      try notificationService.sendScheduledNotification(user: user, date: meetup.startDate.addingTimeInterval(-3600), content: "Your meetup is starting in an hour!", type: .meetup, typeId: meetup.id!.int!)
     }
     
     return Response(status: .ok)
@@ -135,7 +135,7 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
       .map { try $0.invitee.get() }
       .flatMap { $0 }
     
-    try notificationService.sendBatchNotifications(users: invites, content: "The meetup: \(meetup.title), has been updated!")
+    try notificationService.sendBatchNotifications(users: invites, content: "The meetup: \(meetup.title), has been updated!", type: .meetup, typeId: meetup.id!.int!)
     
     return Response(status: .ok)
   }
@@ -163,8 +163,9 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     // send a notification
     guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
     let notificationService = try OneSignalService(config: config)
-  
-    try notificationService.sendBatchNotifications(users: invitedUsers, content: "The meetup: \(meetup.title), has been deleted!")
+    
+    try notificationService.cancelNotification(type: .meetup, typeId: meetup.id!.int!)
+    try notificationService.sendBatchNotifications(users: invitedUsers, content: "The meetup: \(meetup.title), has been deleted!", type: .meetup, typeId: meetup.id!.int!)
     
     return Response(status: .ok)
   }
@@ -177,21 +178,5 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
       update: updateMeetup,
       destroy: deleteMeetup
     )
-  }
-}
-
-extension Request {
-  fileprivate func meetup() throws -> Meetup {
-    guard let userId = headers["userId"]?.int, let meetupId = parameters["meetupId"]?.int else {
-      throw Abort.badRequest
-    }
-    
-    // once we get userId, we'll find all the ties between meetup
-    guard let meetup = try Meetup.makeQuery().filter("userId", userId)
-      .and({ try $0.filter("meetupId", meetupId) }).first() else {
-        throw Abort.notFound
-    }
-    
-    return meetup
   }
 }
