@@ -47,6 +47,8 @@ public final class UserController: EmptyInitializable, ResourceRepresentable {
 		user.displayName = request.json?["displayName"]?.string ?? user.displayName
 		user.email = request.json?["email"]?.string ?? user.email
     user.deviceToken = request.json?["deviceToken"]?.string ?? user.deviceToken
+    
+    try user.save()
 		
     return Response(status: .ok)
 	}
