@@ -61,7 +61,7 @@ extension Invitation: Preparation {
       invitation.parent(User.self, foreignIdKey: "inviteeId")
 			invitation.parent(Meetup.self)
 			invitation.bool("accepted", default: false)
-      invitation.raw("UNIQUE(\"inviterId\", \"inviteeId\")")
+      invitation.raw("UNIQUE(\"inviterId\", \"inviteeId\", \"meetupId\")")
 		}
 	}
 	
