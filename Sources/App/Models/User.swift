@@ -123,6 +123,7 @@ extension User: JSONConvertible {
 		try json.set("displayName", displayName)
 		try json.set("email", email)
 		try json.set("profileURL", profileURL)
+    try json.set("deviceToken", deviceToken)
 		try json.set("verified", verified)
 		try json.set("createdAt", createdAt)
 		try json.set("updatedAt", updatedAt)
