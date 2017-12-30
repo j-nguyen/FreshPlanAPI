@@ -10,6 +10,7 @@ import HTTP
 import JWT
 import Foundation
 import BCrypt
+import Crypto
 
 public final class AuthController: EmptyInitializable {
   
@@ -36,14 +37,9 @@ public final class AuthController: EmptyInitializable {
 		var payload = JSON(ExpirationTimeClaim(createTimestamp: { Int(Date().timeIntervalSince1970) + 86400 }))
 		
 		// set-up our random payload string to check
-		var code: Int
-		#if os(Linux)
-			srandom(UInt32(time(nil)))
-			code = Int(random() % 10000) + 1000
-		#else
-			code = Int(arc4random_uniform(9999)) + 1000
-		#endif
-		
+    let random = Random()
+    let code: Int = try Int(random.makeUInt32())
+    
 		try payload.set("userId", userId)
 		try payload.set("code", code)
 		
@@ -95,14 +91,9 @@ public final class AuthController: EmptyInitializable {
 			//: This helps us create a "verification" registeration to verify your email
 			var payload = JSON(ExpirationTimeClaim(createTimestamp: { Int(Date().timeIntervalSince1970) + 86400 }))
 			
-			// set-up our random payload string to check
-			var code: Int
-			#if os(Linux)
-				srandom(UInt32(time(nil)))
-				code = Int(random() % 10000) + 1000
-			#else
-				code = Int(arc4random_uniform(9999)) + 1000
-			#endif
+      // set-up our random payload string to check
+      let random = Random()
+      let code: Int = try Int(random.makeUInt32())
 			
 			try payload.set("userId", userId)
 			try payload.set("code", code)
@@ -189,14 +180,9 @@ public final class AuthController: EmptyInitializable {
 		//: This helps us create a "verification" registeration to verify your email
 		var payload = JSON(ExpirationTimeClaim(createTimestamp: { Int(Date().timeIntervalSince1970) + 86400 }))
 		
-		// set-up our random payload string to check
-		var code: Int
-		#if os(Linux)
-			srandom(UInt32(time(nil)))
-			code = Int(random() % 10000) + 1000
-		#else
-			code = Int(arc4random_uniform(9999)) + 1000
-		#endif
+    // set-up our random payload string to check
+    let random = Random()
+    let code: Int = try Int(random.makeUInt32())
 		
 		try payload.set("userId", userId)
 		try payload.set("code", code)

@@ -7,6 +7,7 @@
 
 import Vapor
 import HTTP
+import Crypto
 
 public final class V1Collection: EmptyInitializable, RouteCollection {
 	public init() { }

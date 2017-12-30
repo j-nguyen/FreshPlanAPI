@@ -112,7 +112,7 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     meetup.description = request.json?["description"]?.string ?? meetup.description
     
     if let startDate = request.json?["startDate"]?.date {
-      guard startDate > meetup.endDate else {
+      guard startDate < meetup.endDate else {
         throw Abort(.conflict, reason: "Your start date can't be higher than your end date")
       }
       meetup.startDate = startDate

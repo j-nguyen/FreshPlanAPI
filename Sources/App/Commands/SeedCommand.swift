@@ -82,8 +82,8 @@ public final class SeedCommand: Command {
     
     // create location
     var locationJSON = JSON()
-    try locationJSON.set("latitude", 24.2352351)
-    try locationJSON.set("longitude", 23.126343)
+    try locationJSON.set("latitude", 42.317432)
+    try locationJSON.set("longitude", -83.026772)
     let locationJSONString = try locationJSON.serialize().makeString()
     
     // create other
@@ -99,7 +99,7 @@ public final class SeedCommand: Command {
           title: "Meetup-\(meetupTypes[index].type)-\(user.id!.int!)",
           description: description,
           startDate: currentDate.addingTimeInterval(13492),
-          endDate: currentDate.addingTimeInterval(124342),
+          endDate: currentDate.addingTimeInterval(904342),
           metadata: (meetupTypes[index].type == "location") ? locationJSONString : otherJSONString
         )
         try? meetup.save()
