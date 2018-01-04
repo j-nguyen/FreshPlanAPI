@@ -67,7 +67,9 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
     return try invites.map { invite -> JSON in
       let meetup = try Meetup.find(invite.meetupId)
       var json = try invite.makeJSON()
-      try json.set("meetup", meetup)
+      try json.set("meetupName", meetup?.title)
+      try json.set("meetupStartDate", meetup?.startDate)
+      try json.set("meetupEndDate", meetup?.endDate)
       return json
     }.makeJSON()
   }
@@ -81,7 +83,9 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
     
     let meetup = try Meetup.find(invite.meetupId)
     var inviteJSON = try invite.makeJSON()
-    try inviteJSON.set("meetup", meetup)
+    try inviteJSON.set("meetupName", meetup?.title)
+    try inviteJSON.set("meetupStartDate", meetup?.startDate)
+    try inviteJSON.set("meetupEndDate", meetup?.endDate)
     
     return inviteJSON
   }
