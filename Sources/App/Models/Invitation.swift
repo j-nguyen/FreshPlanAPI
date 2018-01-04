@@ -82,7 +82,6 @@ extension Invitation: JSONConvertible {
 	public func makeJSON() throws -> JSON {
 		var json = JSON()
 		try json.set("id", id)
-    try json.set("meetupId", meetupId)
     try json.set("inviter", inviter.get()?.makeJSON())
     try json.set("invitee", invitee.get()?.makeJSON())
 		try json.set("accepted", accepted)

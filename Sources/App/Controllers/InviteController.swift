@@ -60,8 +60,16 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
   // get all inv
   public func getAllInvites(_ request: Request) throws -> ResponseRepresentable {
     guard let userId = request.headers["userId"]?.int else { throw Abort.badRequest }
-    let invite = try Invitation.makeQuery().filter("inviteeId", userId).all()
-    return try invite.makeJSON()
+    let invites = try Invitation.makeQuery().filter("inviteeId", userId).all()
+    
+    // insert meetup in here
+    
+    return try invites.map { invite -> JSON in
+      let meetup = try Meetup.find(invite.meetupId)
+      var json = try invite.makeJSON()
+      try json.set("meetup", meetup)
+      return json
+    }.makeJSON()
   }
   
   // get inv by id
@@ -70,7 +78,12 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
     guard let invite = try invite.makeQuery().filter("inviteeId", userId).first() else {
       throw Abort.notFound
     }
-    return try invite.makeJSON()
+    
+    let meetup = try Meetup.find(invite.meetupId)
+    var inviteJSON = try invite.makeJSON()
+    try inviteJSON.set("meetup", meetup)
+    
+    return inviteJSON
   }
   
   // update
