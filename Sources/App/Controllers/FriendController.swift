@@ -55,7 +55,7 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
   
   public func removeFriend(_ request: Request) throws -> ResponseRepresentable {
     guard let userId = request.parameters["userId"]?.int,
-          let requesterId = request.parameters["requesterId"]?.int  else {
+          let requesterId = request.parameters["friendId"]?.int  else {
         throw Abort.badRequest
     }
   
