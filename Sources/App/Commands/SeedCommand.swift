@@ -8,6 +8,7 @@
 import Foundation
 import Vapor
 import Console
+import PostgreSQL
 
 public final class SeedCommand: Command {
 	public let id = "seed"
@@ -27,7 +28,9 @@ public final class SeedCommand: Command {
 				guard let name = type.string else { throw Abort.notFound }
 				console.print("Saving meetup type: \(name)")
 				let meetupObj = MeetupType(type: name)
-				try? meetupObj.save()
+        if try MeetupType.makeQuery().filter("type", name).first() == nil {
+          try? meetupObj.save()
+        }
 				console.print("Done.")
 			}
 		}
@@ -49,7 +52,7 @@ public final class SeedCommand: Command {
 	}
   
   fileprivate func addFriends() throws {
-    let users = try User.all()
+    let users = try User.makeQuery().filter("displayName", .contains, "fakeuser").all()
     
     users.forEach { user in
       users.forEach { other in
@@ -63,11 +66,12 @@ public final class SeedCommand: Command {
   }
     
   fileprivate func addInvites() throws {
-    let meetups = try Meetup.all()
+    let users = try User.makeQuery().filter("displayName", .contains, "fakeuser").all()
+    let meetups = try Meetup.makeQuery().filter("userId", in: users.map { $0.id?.int }.flatMap { $0 } ).all()
     try meetups.forEach { meetup in
       let friends = try Friend.makeQuery().filter("userId", meetup.userId).all()
       friends.forEach { friend in
-        let invitation = Invitation(inviterId: meetup.userId, inviteeId: friend.id!, meetupId: meetup.id!)
+        let invitation = Invitation(inviterId: meetup.userId, inviteeId: friend.friendId, meetupId: meetup.id!)
         try? invitation.save()
         console.print("Invitation saved for: \(meetup.title)")
       }
@@ -76,7 +80,7 @@ public final class SeedCommand: Command {
 	
 	fileprivate func addMeetups() throws {
     let meetupTypes = try MeetupType.all()
-    let users = try User.all()
+    let users = try User.makeQuery().filter("displayName", .contains, "fakeuser").all()
     let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Turpis nunc eget lorem dolor sed viverra. Nulla aliquet enim tortor at auctor urna nunc."
     let currentDate = Date()
     
@@ -110,6 +114,13 @@ public final class SeedCommand: Command {
 	
 	public func run(arguments: [String]) throws {
 		console.print("running custom command..")
+    // we need to delete all the users first
+    console.print("Deleting all contents..")
+    try? Invitation.makeQuery().delete()
+    try? Friend.makeQuery().delete()
+    try? Meetup.makeQuery().delete()
+    try? User.makeQuery().filter("displayName", .contains, "fakeuser").delete()
+    console.print("Running seeding..")
 		try? addMeetupTypes()
 		try? addUsers()
 		try? addMeetups()

@@ -58,16 +58,21 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
           let friendId = request.parameters["friendId"]?.int  else {
         throw Abort.badRequest
     }
-  
-    guard let friend = try Friend.makeQuery().filter("friendId", friendId).first() else {
+    
+    // get the friend, and the friend owner
+    guard
+      let friend = try Friend.makeQuery().filter("friendId", friendId).and({ try $0.filter("userId", userId) }).first(),
+      let userFriend = try Friend.makeQuery().filter("friendId", userId).and({ try $0.filter("userId", friendId) }).first() else {
       throw Abort.notFound
     }
     
-    guard userId == request.headers["userId"]?.int && friend.userId.int == userId else {
-      throw Abort(.forbidden, reason: "You cannot edit someones friend request!")
+    guard userId == request.headers["userId"]?.int else {
+      throw Abort(.forbidden, reason: "You must be the user to be able to remove friends")
     }
     
+    // we need to delete both since they're bi directional
     try friend.delete()
+    try userFriend.delete()
     
     return Response(status: .ok)
   }
