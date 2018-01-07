@@ -67,7 +67,7 @@ public class EmailController {
     //: Generate the email
     if let droplet = droplet {
       let body = EmailBody(type: .html, content: try inviteTemplate.makeMessage())
-      let email = Email(from: from.email, to: user.email, subject: inviteTemplate.subject, body: body)
+      let email = Email(from: serverEmail, to: user.email, subject: inviteTemplate.subject, body: body)
       try droplet.mail.send(email)
     }
 	}
@@ -85,7 +85,7 @@ public class EmailController {
     //: Generate the email
     if let droplet = droplet {
       let body = EmailBody(type: .html, content: try acceptTemplate.makeMessage())
-      let email = Email(from: from.email, to: user.email, subject: acceptTemplate.subject, body: body)
+      let email = Email(from: serverEmail, to: user.email, subject: acceptTemplate.subject, body: body)
       try droplet.mail.send(email)
     }
 	}
@@ -102,7 +102,7 @@ public class EmailController {
     //: Generate the email
     if let droplet = droplet {
       let body = EmailBody(type: .html, content: try friendRequestTemplate.makeMessage())
-      let email = Email(from: from.email, to: user.email, subject: friendRequestTemplate.subject, body: body)
+      let email = Email(from: serverEmail, to: user.email, subject: friendRequestTemplate.subject, body: body)
       try droplet.mail.send(email)
     }
 	}
@@ -119,7 +119,7 @@ public class EmailController {
     //: Generate the email
     if let droplet = droplet {
       let body = EmailBody(type: .html, content: try acceptFriendTemplate.makeMessage())
-      let email = Email(from: from.email, to: user.email, subject: acceptFriendTemplate.subject, body: body)
+      let email = Email(from: serverEmail, to: user.email, subject: acceptFriendTemplate.subject, body: body)
       try droplet.mail.send(email)
     }
 	}

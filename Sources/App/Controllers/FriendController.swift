@@ -47,11 +47,11 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
         throw Abort.notFound
       }
       
-      try emailController.sendAcceptedFriendRequestEmail(from: user, to: friendOfUser)
-      try notificationService.sendNotification(user: friendOfUser, content: "\(user.displayName) has accepted your friend request!", type: .friend, typeId: acceptedFriendOfUser.id!.int!)
+      try emailController.sendAcceptedFriendRequestEmail(from: friendOfUser, to: user)
+      try notificationService.sendNotification(user: user, content: "\(friendOfUser.displayName) has accepted your friend request!", type: .friend, typeId: acceptedFriendOfUser.id!.int!)
     }
-    
-    try friend.save()
+    // we need to delete this because it doesn't matter for the request
+    try friend.delete()
     
     return Response(status: .ok)
   }
@@ -129,8 +129,8 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     
     try emailController.sendFriendRequestEmail(from: user, to: friendOfUser)
     try notificationService.sendNotification(
-      user: user,
-      content: "\(friendOfUser.displayName) has sent a you friend request!",
+      user: friendOfUser,
+      content: "\(user.displayName) has sent a you friend request!",
       type: .friend,
       typeId: friend.id!.int!
     )
