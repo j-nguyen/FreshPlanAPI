@@ -31,21 +31,24 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     
     if friend.accepted {
       // we want to add two rows to make sure they've been added
-      let acceptedFriend = Friend(userId: friend.requesterId, friendId: friend.requestedId)
-      let acceptedFriendOfUser = Friend(userId: friend.requestedId, friendId: friend.requesterId)
+      let acceptedFriend = Friend(userId: friend.requestedId, friendId: friend.requesterId)
+      let acceptedFriendOfUser = Friend(userId: friend.requesterId, friendId: friend.requestedId)
       
       try acceptedFriend.save()
       try acceptedFriendOfUser.save()
       
       // config
       guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
+      guard let onesignal = droplet?.config["onesignal"] else { throw Abort.notFound }
       let emailController = try EmailController(config: config)
+      let notificationService = try OneSignalService(config: onesignal)
       
       guard let user = try friend.requester.get(), let friendOfUser = try friend.requested.get() else {
         throw Abort.notFound
       }
       
       try emailController.sendAcceptedFriendRequestEmail(from: user, to: friendOfUser)
+      try notificationService.sendNotification(user: friendOfUser, content: "\(user.displayName) has accepted your friend request!", type: .friend, typeId: acceptedFriendOfUser.id!.int!)
     }
     
     try friend.save()
@@ -117,11 +120,20 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     try friend.save()
     
     guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
+    guard let onesignal = droplet?.config["onesignal"] else { throw Abort.notFound }
+    
     let emailController = try EmailController(config: config)
+    let notificationService = try OneSignalService(config: onesignal)
     
     guard let user = try friend.requester.get(), let friendOfUser = try friend.requested.get() else { throw Abort.notFound }
     
     try emailController.sendFriendRequestEmail(from: user, to: friendOfUser)
+    try notificationService.sendNotification(
+      user: user,
+      content: "\(friendOfUser.displayName) has sent a you friend request!",
+      type: .friend,
+      typeId: friend.id!.int!
+    )
     
     return Response(status: .ok)
   }
