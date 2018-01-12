@@ -31,7 +31,14 @@ public final class UserController: EmptyInitializable, ResourceRepresentable {
 	
 	// get user by the id
   public func getUser(_ request: Request, user: User) throws -> ResponseRepresentable {
-		return try user.makeJSON()
+    var userJSON = try user.makeJSON()
+    
+    // if the user requesting is the user itself, we can let the user have its deviceoken
+    if let userId = request.headers["userId"]?.int, userId == user.id?.int {
+      try userJSON.set("deviceToken", user.deviceToken)
+    }
+    
+		return userJSON
 	}
 	
 	// update user
