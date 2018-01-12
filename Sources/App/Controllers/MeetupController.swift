@@ -56,11 +56,24 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     // create a notification for later use
     if meetup.startDate >= Date() {
       guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
-      guard let user = try meetup.user.get() else { throw Abort.notFound }
+      guard let _ = try meetup.user.get() else { throw Abort.notFound }
       let notificationService = try OneSignalService(config: config)
       // send another one too prior 3 hours
-      try notificationService.sendScheduledNotification(user: user, date: meetup.startDate, content: "Your meetup is starting!", type: .meetup, typeId: meetup.id!.int!)
-      try notificationService.sendScheduledNotification(user: user, date: meetup.startDate.addingTimeInterval(-3600), content: "Your meetup is starting in an hour!", type: .meetup, typeId: meetup.id!.int!)
+      let invitedUsers = try meetup.invitations.all().map { try $0.invitee.get() }.flatMap { $0 }
+      try notificationService.sendBatchedScheduledNotification(
+        users: invitedUsers,
+        date: meetup.startDate,
+        content: "Your meetup is starting!",
+        type: .meetup,
+        typeId: meetup.id!.int!
+      )
+      try notificationService.sendBatchedScheduledNotification(
+        users: invitedUsers,
+        date: meetup.startDate.addingTimeInterval(-3600),
+        content: "Your meetup is starting in an hour!",
+        type: .meetup,
+        typeId: meetup.id!.int!
+      )
     }
     
     return Response(status: .ok)
