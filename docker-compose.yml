@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres:13
+    logging:
+      driver: none
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=freshplan-dev
+    ports:
+      - 5432:5432
+  app:
+    build: .
+    command: swift run
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 8080:8080

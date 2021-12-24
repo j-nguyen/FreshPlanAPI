@@ -1,0 +1,7 @@
+{
+    "hostname": "postgres",
+    "user": "postgres",
+    "password": "",
+    "database": "freshplan-dev",
+    "port": 5432
+}
