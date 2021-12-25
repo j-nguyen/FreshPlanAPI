@@ -38,17 +38,17 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
       try acceptedFriendOfUser.save()
       
       // config
-      guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
-      guard let onesignal = droplet?.config["onesignal"] else { throw Abort.notFound }
-      let emailController = try EmailController(config: config)
-      let notificationService = try OneSignalService(config: onesignal)
+      // guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
+      // guard let onesignal = droplet?.config["onesignal"] else { throw Abort.notFound }
+      // let emailController = try EmailController(config: config)
+      // let notificationService = try OneSignalService(config: onesignal)
       
-      guard let user = try friend.requester.get(), let friendOfUser = try friend.requested.get() else {
-        throw Abort.notFound
-      }
+      // guard let user = try friend.requester.get(), let friendOfUser = try friend.requested.get() else {
+      //   throw Abort.notFound
+      // }
       
-      try emailController.sendAcceptedFriendRequestEmail(from: friendOfUser, to: user)
-      try notificationService.sendNotification(user: user, content: "\(friendOfUser.displayName) has accepted your friend request!", type: .friend, typeId: acceptedFriendOfUser.id!.int!)
+      // try emailController.sendAcceptedFriendRequestEmail(from: friendOfUser, to: user)
+      // try notificationService.sendNotification(user: user, content: "\(friendOfUser.displayName) has accepted your friend request!", type: .friend, typeId: acceptedFriendOfUser.id!.int!)
     }
     // we need to delete this because it doesn't matter for the request
     try friend.delete()
@@ -119,21 +119,21 @@ public final class FriendController: EmptyInitializable, ResourceRepresentable {
     let friend = FriendRequest(requesterId: Identifier(userId), requestedId: Identifier(friendId))
     try friend.save()
     
-    guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
-    guard let onesignal = droplet?.config["onesignal"] else { throw Abort.notFound }
+    // guard let config = droplet?.config["sendgrid"] else { throw Abort.notFound }
+    // guard let onesignal = droplet?.config["onesignal"] else { throw Abort.notFound }
     
-    let emailController = try EmailController(config: config)
-    let notificationService = try OneSignalService(config: onesignal)
+    // let emailController = try EmailController(config: config)
+    // let notificationService = try OneSignalService(config: onesignal)
     
-    guard let user = try friend.requester.get(), let friendOfUser = try friend.requested.get() else { throw Abort.notFound }
+    // guard let user = try friend.requester.get(), let friendOfUser = try friend.requested.get() else { throw Abort.notFound }
     
-    try emailController.sendFriendRequestEmail(from: user, to: friendOfUser)
-    try notificationService.sendNotification(
-      user: friendOfUser,
-      content: "\(user.displayName) has sent a you friend request!",
-      type: .friend,
-      typeId: friend.id!.int!
-    )
+    // try emailController.sendFriendRequestEmail(from: user, to: friendOfUser)
+    // try notificationService.sendNotification(
+    //   user: friendOfUser,
+    //   content: "\(user.displayName) has sent a you friend request!",
+    //   type: .friend,
+    //   typeId: friend.id!.int!
+    // )
     
     return Response(status: .ok)
   }

@@ -54,27 +54,27 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     
     // create a scheduled notification for later
     // create a notification for later use
-    if meetup.startDate >= Date() {
-      guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
-      guard let _ = try meetup.user.get() else { throw Abort.notFound }
-      let notificationService = try OneSignalService(config: config)
+    // if meetup.startDate >= Date() {
+      // guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
+      // guard let _ = try meetup.user.get() else { throw Abort.notFound }
+      // let notificationService = try OneSignalService(config: config)
       // send another one too prior 3 hours
-      let invitedUsers = try meetup.invitations.all().map { try $0.invitee.get() }.flatMap { $0 }
-      try notificationService.sendBatchedScheduledNotification(
-        users: invitedUsers,
-        date: meetup.startDate,
-        content: "Your meetup is starting!",
-        type: .meetup,
-        typeId: meetup.id!.int!
-      )
-      try notificationService.sendBatchedScheduledNotification(
-        users: invitedUsers,
-        date: meetup.startDate.addingTimeInterval(-3600),
-        content: "Your meetup is starting in an hour!",
-        type: .meetup,
-        typeId: meetup.id!.int!
-      )
-    }
+      // let invitedUsers = try meetup.invitations.all().map { try $0.invitee.get() }.flatMap { $0 }
+      // try notificationService.sendBatchedScheduledNotification(
+      //   users: invitedUsers,
+      //   date: meetup.startDate,
+      //   content: "Your meetup is starting!",
+      //   type: .meetup,
+      //   typeId: meetup.id!.int!
+      // )
+      // try notificationService.sendBatchedScheduledNotification(
+      //   users: invitedUsers,
+      //   date: meetup.startDate.addingTimeInterval(-3600),
+      //   content: "Your meetup is starting in an hour!",
+      //   type: .meetup,
+      //   typeId: meetup.id!.int!
+      // )
+    // }
     
     return Response(status: .ok)
   }
@@ -139,8 +139,8 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     try meetup.save()
     
     // send a notification
-    guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
-    let notificationService = try OneSignalService(config: config)
+    // guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
+    // let notificationService = try OneSignalService(config: config)
     
     // get all the invites
     let invites = try meetup.invitations
@@ -148,7 +148,7 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
       .map { try $0.invitee.get() }
       .flatMap { $0 }
     
-    try notificationService.sendBatchNotifications(users: invites, content: "The meetup: \(meetup.title), has been updated!", type: .meetup, typeId: meetup.id!.int!)
+    // try notificationService.sendBatchNotifications(users: invites, content: "The meetup: \(meetup.title), has been updated!", type: .meetup, typeId: meetup.id!.int!)
     
     return Response(status: .ok)
   }
@@ -174,11 +174,11 @@ public final class MeetupController: ResourceRepresentable, EmptyInitializable {
     try meetup.delete()
     
     // send a notification
-    guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
-    let notificationService = try OneSignalService(config: config)
+    // guard let config = droplet?.config["onesignal"] else { throw Abort.serverError }
+    // let notificationService = try OneSignalService(config: config)
     
-    try notificationService.cancelNotification(type: .meetup, typeId: meetup.id!.int!)
-    try notificationService.sendBatchNotifications(users: invitedUsers, content: "The meetup: \(meetup.title), has been deleted!", type: .meetup, typeId: meetup.id!.int!)
+    // try notificationService.cancelNotification(type: .meetup, typeId: meetup.id!.int!)
+    // try notificationService.sendBatchNotifications(users: invitedUsers, content: "The meetup: \(meetup.title), has been deleted!", type: .meetup, typeId: meetup.id!.int!)
     
     return Response(status: .ok)
   }

@@ -45,14 +45,14 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
     try invite.save()
     
     // send email
-    guard let config = droplet?.config["sendgrid"] else { throw Abort.serverError }
-    let emailController = try EmailController(config: config)
-    try emailController.sendInvitationEmail(from: inviter, to: invitee, meetup: meetup.title)
+    // guard let config = droplet?.config["sendgrid"] else { throw Abort.serverError }
+    // let emailController = try EmailController(config: config)
+    // try emailController.sendInvitationEmail(from: inviter, to: invitee, meetup: meetup.title)
     
     // send out notification
-    guard let onesignal = droplet?.config["onesignal"] else { throw Abort.serverError }
-    let notificationService = try OneSignalService(config: onesignal)
-    try notificationService.sendNotification(user: invitee, content: "\(inviter.displayName) has invited you to join \(meetup.title)! Click to join!", type: .invitation, typeId: invite.id!.int!)
+    // guard let onesignal = droplet?.config["onesignal"] else { throw Abort.serverError }
+    // let notificationService = try OneSignalService(config: onesignal)
+    // try notificationService.sendNotification(user: invitee, content: "\(inviter.displayName) has invited you to join \(meetup.title)! Click to join!", type: .invitation, typeId: invite.id!.int!)
     
     return Response(status: .ok)
   }
@@ -100,19 +100,19 @@ public final class InviteController: ResourceRepresentable, EmptyInitializable {
     invite.accepted = request.json?["accepted"]?.bool ?? invite.accepted
     try invite.save()
     
-    if invite.accepted {
-      guard let invitee = try invite.invitee.get() else { throw Abort.notFound }
-      guard let meetup = try invite.meetup.get() else { throw Abort.notFound }
-      guard let inviter = try invite.inviter.get() else { throw Abort.notFound }
-      // attemp to send email
-      guard let config = droplet?.config["sendgrid"] else { throw Abort.serverError }
-      let emailController = try EmailController(config: config)
-      try emailController.sendInvitationEmail(from: inviter, to: invitee, meetup: meetup.title)
-      // attempt to send notification
-      guard let onesignal = droplet?.config["onesignal"] else { throw Abort.serverError }
-      let notificationService = try OneSignalService(config: onesignal)
-      try notificationService.sendNotification(user: inviter, content: "\(invitee.displayName) has joined \(meetup.title)!", type: .invitation, typeId: invite.id!.int!)
-    }
+    // if invite.accepted {
+    //   guard let invitee = try invite.invitee.get() else { throw Abort.notFound }
+    //   guard let meetup = try invite.meetup.get() else { throw Abort.notFound }
+    //   guard let inviter = try invite.inviter.get() else { throw Abort.notFound }
+    //   // attemp to send email
+    //   guard let config = droplet?.config["sendgrid"] else { throw Abort.serverError }
+    //   let emailController = try EmailController(config: config)
+    //   try emailController.sendInvitationEmail(from: inviter, to: invitee, meetup: meetup.title)
+    //   // attempt to send notification
+    //   guard let onesignal = droplet?.config["onesignal"] else { throw Abort.serverError }
+    //   let notificationService = try OneSignalService(config: onesignal)
+    //   try notificationService.sendNotification(user: inviter, content: "\(invitee.displayName) has joined \(meetup.title)!", type: .invitation, typeId: invite.id!.int!)
+    // }
     return Response(status: .ok)
   }
   
